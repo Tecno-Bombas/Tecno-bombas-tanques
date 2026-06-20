@@ -7,421 +7,103 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{
-    --azul-900:#0d2a5c;
-    --azul-700:#1d4ed8;
-    --azul-500:#3b7ddb;
-    --azul-200:#cfe1f7;
-    --azul-50:#f3f8fd;
-    --blanco:#ffffff;
-    --gris-texto:#3a4658;
-    --rojo:#c0392b;
-    --verde:#1f8a4c;
-    --radius:14px;
-    --shadow:0 4px 18px rgba(13,42,92,0.10);
+    --azul-900:#0d2a5c; --azul-700:#1d4ed8; --azul-500:#3b7ddb;
+    --azul-200:#cfe1f7; --azul-50:#f3f8fd; --blanco:#ffffff;
+    --gris-texto:#3a4658; --rojo:#c0392b; --verde:#1f8a4c;
+    --radius:14px; --shadow:0 4px 18px rgba(13,42,92,0.10);
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;
-    font-family:'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+    margin:0; font-family:'Segoe UI', system-ui, sans-serif;
     background:linear-gradient(180deg,var(--azul-50) 0%, #eaf2fb 100%);
-    color:var(--gris-texto);
-    min-height:100vh;
+    color:var(--gris-texto); min-height:100vh;
   }
-  
-  /* ESTILOS DEL NUEVO LOGO */
   .logo-img-top { width:38px; height:38px; object-fit:contain; background:white; border-radius:50%; padding:2px; flex-shrink:0; }
   .logo-img-auth { width:110px; height:110px; object-fit:contain; margin:0 auto 10px; display:block; }
-
   .topbar{
     background:linear-gradient(135deg,var(--azul-900),var(--azul-700));
-    color:white;
-    padding:14px 20px;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    box-shadow:var(--shadow);
-    position:sticky;
-    top:0;
-    z-index:50;
+    color:white; padding:14px 20px; display:flex; align-items:center; gap:14px;
+    box-shadow:var(--shadow); position:sticky; top:0; z-index:50;
   }
-  .topbar h1{
-    font-size:17px;
-    margin:0;
-    font-weight:700;
-    letter-spacing:0.3px;
-  }
-  .topbar .sub{
-    font-size:11px;
-    opacity:0.85;
-    letter-spacing:1.5px;
-    margin-top:1px;
-  }
+  .topbar h1{font-size:17px; margin:0; font-weight:700; letter-spacing:0.3px;}
+  .topbar .sub{font-size:11px; opacity:0.85; letter-spacing:1.5px; margin-top:1px;}
   .topbar .right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;}
   .topbar button.logout{
-    background:rgba(255,255,255,0.15);
-    border:1px solid rgba(255,255,255,0.4);
-    color:white;
-    padding:6px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:12px;
+    background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4); color:white;
+    padding:6px 12px; border-radius:8px; cursor:pointer; font-size:12px;
   }
   .topbar button.logout:hover{background:rgba(255,255,255,0.25);}
-
   .container{max-width:680px;margin:0 auto;padding:20px 16px 60px;}
-
-  /* AUTH SCREEN */
-  .auth-wrap{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-  }
-  .auth-card{
-    background:white;
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:36px 30px;
-    width:100%;
-    max-width:380px;
-    text-align:center;
-  }
-  .auth-card h2{
-    color:var(--azul-900);
-    font-size:20px;
-    margin:6px 0 2px;
-    font-weight:800;
-  }
-  .auth-card .tagline{
-    font-size:11px;
-    color:var(--azul-500);
-    letter-spacing:1.5px;
-    margin-bottom:24px;
-    font-weight:600;
-  }
-  .auth-card .intro-text{
-    font-size:13px;
-    color:var(--gris-texto);
-    margin-bottom:20px;
-    line-height:1.5;
-  }
+  .auth-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .auth-card{background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:36px 30px; width:100%; max-width:380px; text-align:center;}
+  .auth-card h2{color:var(--azul-900); font-size:20px; margin:6px 0 2px; font-weight:800;}
+  .auth-card .tagline{font-size:11px; color:var(--azul-500); letter-spacing:1.5px; margin-bottom:24px; font-weight:600;}
+  .auth-card .intro-text{font-size:13px; color:var(--gris-texto); margin-bottom:20px; line-height:1.5;}
   .field{margin-bottom:14px;text-align:left;}
-  .field label{
-    display:block;
-    font-size:12px;
-    font-weight:600;
-    color:var(--azul-900);
-    margin-bottom:5px;
-  }
+  .field label{display:block; font-size:12px; font-weight:600; color:var(--azul-900); margin-bottom:5px;}
   .field input, .field select, .field textarea{
-    width:100%;
-    padding:11px 13px;
-    border:1.5px solid var(--azul-200);
-    border-radius:10px;
-    font-size:14px;
-    color:var(--gris-texto);
-    background:white;
-    font-family:inherit;
+    width:100%; padding:11px 13px; border:1.5px solid var(--azul-200); border-radius:10px; font-size:14px; color:var(--gris-texto); background:white; font-family:inherit;
   }
-  .field input:focus, .field select:focus, .field textarea:focus{
-    outline:none;
-    border-color:var(--azul-700);
-  }
-  
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--azul-700);}
   .row-niveles { display:grid; grid-template-columns: 80px 1fr; gap:12px; margin-bottom:12px; }
-
   .btn-primary{
-    width:100%;
-    background:var(--azul-700);
-    color:white;
-    border:none;
-    padding:12px;
-    border-radius:10px;
-    font-size:14px;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:6px;
-    transition:background 0.15s;
+    width:100%; background:var(--azul-700); color:white; border:none; padding:12px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; margin-top:6px;
   }
   .btn-primary:hover{background:var(--azul-900);}
   .btn-primary:disabled{background:#9fb6d8;cursor:not-allowed;}
-
   .btn-cancelar{
-    width:100%;
-    background:#e0e7ff;
-    color:var(--azul-900);
-    border:none;
-    padding:12px;
-    border-radius:10px;
-    font-size:14px;
-    font-weight:700;
-    cursor:pointer;
-    margin-top:10px;
+    width:100%; background:#e0e7ff; color:var(--azul-900); border:none; padding:12px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; margin-top:10px;
   }
-
-  .auth-error{
-    background:#fdecea;
-    color:var(--rojo);
-    border-radius:8px;
-    padding:9px 12px;
-    font-size:12.5px;
-    margin-bottom:14px;
-    text-align:left;
-  }
-  .auth-success{
-    background:#e9f7ef;
-    color:var(--verde);
-    border-radius:8px;
-    padding:9px 12px;
-    font-size:12.5px;
-    margin-bottom:14px;
-    text-align:left;
-  }
-
-  /* MAIN APP */
-  .tabs{
-    display:flex;
-    gap:8px;
-    margin-bottom:18px;
-    background:white;
-    border-radius:12px;
-    padding:5px;
-    box-shadow:var(--shadow);
-  }
-  .tabs button{
-    flex:1;
-    padding:10px;
-    border:none;
-    background:transparent;
-    border-radius:9px;
-    font-size:13px;
-    font-weight:700;
-    color:var(--azul-500);
-    cursor:pointer;
-  }
-  .tabs button.active{
-    background:var(--azul-700);
-    color:white;
-  }
-
-  .card{
-    background:white;
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:22px;
-    margin-bottom:18px;
-  }
-  .card h3{
-    color:var(--azul-900);
-    font-size:15px;
-    margin:0 0 16px;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-
+  .auth-error{background:#fdecea; color:var(--rojo); border-radius:8px; padding:9px 12px; font-size:12.5px; margin-bottom:14px; text-align:left;}
+  .tabs{display:flex; gap:8px; margin-bottom:18px; background:white; border-radius:12px; padding:5px; box-shadow:var(--shadow);}
+  .tabs button{flex:1; padding:10px; border:none; background:transparent; border-radius:9px; font-size:13px; font-weight:700; color:var(--azul-500); cursor:pointer;}
+  .tabs button.active{background:var(--azul-700); color:white;}
+  .card{background:white; border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; margin-bottom:18px;}
+  .card h3{color:var(--azul-900); font-size:15px; margin:0 0 16px; font-weight:800; display:flex; align-items:center; gap:8px;}
   .dir-row{display:flex;gap:8px;align-items:flex-start;}
   .dir-row .field{flex:1;margin-bottom:0;}
-  .map-btn{
-    margin-top:21px;
-    background:var(--azul-50);
-    border:1.5px solid var(--azul-200);
-    color:var(--azul-700);
-    width:42px;height:42px;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:18px;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-  .map-btn:hover{background:var(--azul-200);}
-
-  .edif-suggestions{
-    position:relative;
-  }
-  .suggestion-list{
-    position:absolute;
-    top:100%;
-    left:0;right:0;
-    background:white;
-    border:1.5px solid var(--azul-200);
-    border-radius:10px;
-    margin-top:4px;
-    max-height:160px;
-    overflow-y:auto;
-    z-index:20;
-    box-shadow:var(--shadow);
-  }
-  .suggestion-item{
-    padding:10px 13px;
-    font-size:13px;
-    cursor:pointer;
-    border-bottom:1px solid var(--azul-50);
-  }
+  .map-btn{margin-top:21px; background:var(--azul-50); border:1.5px solid var(--azul-200); color:var(--azul-700); width:42px;height:42px; border-radius:10px; cursor:pointer; font-size:18px; display:flex;align-items:center;justify-content:center; flex-shrink:0;}
+  .edif-suggestions{position:relative;}
+  .suggestion-list{position:absolute; top:100%; left:0;right:0; background:white; border:1.5px solid var(--azul-200); border-radius:10px; margin-top:4px; max-height:160px; overflow-y:auto; z-index:20; box-shadow:var(--shadow);}
+  .suggestion-item{padding:10px 13px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--azul-50);}
   .suggestion-item:hover{background:var(--azul-50);}
   .suggestion-item .s-dir{font-size:11px;color:#8095b5;}
-
-  .photo-input-area{
-    border:2px dashed var(--azul-200);
-    border-radius:10px;
-    padding:18px;
-    text-align:center;
-    cursor:pointer;
-    color:var(--azul-500);
-    font-size:13px;
-    font-weight:600;
-  }
-  .photo-input-area:hover{background:var(--azul-50);}
-  .photo-previews{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:10px;
-  }
-  .photo-thumb{
-    position:relative;
-    width:70px;height:70px;
-    border-radius:8px;
-    overflow:hidden;
-    border:1.5px solid var(--azul-200);
-  }
+  .photo-input-area{border:2px dashed var(--azul-200); border-radius:10px; padding:18px; text-align:center; cursor:pointer; color:var(--azul-500); font-size:13px; font-weight:600;}
+  .photo-previews{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .photo-thumb{position:relative; width:70px;height:70px; border-radius:8px; overflow:hidden; border:1.5px solid var(--azul-200);}
   .photo-thumb img{width:100%;height:100%;object-fit:cover;}
-  .photo-thumb .remove{
-    position:absolute;top:2px;right:2px;
-    background:rgba(192,57,43,0.9);
-    color:white;
-    border:none;
-    border-radius:50%;
-    width:18px;height:18px;
-    font-size:11px;
-    line-height:1;
-    cursor:pointer;
-  }
-
-  .submit-msg{
-    font-size:13px;
-    padding:10px 12px;
-    border-radius:8px;
-    margin-top:10px;
-  }
+  .photo-thumb .remove{position:absolute;top:2px;right:2px; background:rgba(192,57,43,0.9); color:white; border:none; border-radius:50%; width:18px;height:18px; font-size:11px; line-height:1; cursor:pointer;}
+  .submit-msg{font-size:13px; padding:10px 12px; border-radius:8px; margin-top:10px;}
   .submit-msg.ok{background:#e9f7ef;color:var(--verde);}
   .submit-msg.err{background:#fdecea;color:var(--rojo);}
-
-  /* HISTORIAL Y BUSCADOR */
   .search-box{margin-bottom:14px; position: relative;}
-  .search-box input{
-    width:100%;
-    padding:12px 14px 12px 36px;
-    border:1.5px solid var(--azul-200);
-    border-radius:10px;
-    font-size:14px;
-    box-shadow:var(--shadow);
-  }
-  .search-box span{
-    position: absolute;
-    left: 12px;
-    top: 13px;
-    font-size: 14px;
-  }
-
-  .historial-item{
-    border-left:4px solid var(--azul-700);
-    background:var(--azul-50);
-    border-radius:0 10px 10px 0;
-    padding:14px 16px;
-    margin-bottom:12px;
-  }
-  .historial-item .h-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:10px;
-  }
+  .search-box input{width:100%; padding:12px 14px 12px 36px; border:1.5px solid var(--azul-200); border-radius:10px; font-size:14px; box-shadow:var(--shadow);}
+  .search-box span{position: absolute; left: 12px; top: 13px; font-size: 14px;}
+  .historial-item{border-left:4px solid var(--azul-700); background:var(--azul-50); border-radius:0 10px 10px 0; padding:14px 16px; margin-bottom:12px;}
+  .historial-item .h-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
   .historial-item .h-edif{font-weight:800;color:var(--azul-900);font-size:14.5px;}
-  .historial-item .h-dir{
-    font-size:12px;color:var(--azul-500);
-    text-decoration:underline;cursor:pointer;
-    margin-top:2px;
-  }
+  .historial-item .h-dir{font-size:12px;color:var(--azul-500); text-decoration:underline;cursor:pointer; margin-top:2px;}
   .historial-item .h-fecha{font-size:11px;color:#8095b5;white-space:nowrap;}
-  .historial-item .h-litros{
-    display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:13px;
-  }
+  .historial-item .h-litros{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:13px;}
   .historial-item .h-litros b{color:var(--azul-900);}
   .historial-item .h-op{font-size:12px;color:var(--gris-texto);margin-top:6px;}
   .historial-item .h-obs{font-size:12.5px;margin-top:6px;font-style:italic;color:var(--gris-texto);}
   .historial-item .h-fotos{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
-  .historial-item .h-fotos img{
-    width:60px;height:60px;object-fit:cover;border-radius:6px;
-    cursor:pointer;
-    border:1.5px solid var(--azul-200);
-  }
-  
-  .h-actions{
-    display:flex;
-    gap:8px;
-    margin-top:14px;
-    border-top:1px solid var(--azul-200);
-    padding-top:12px;
-  }
-  .h-actions button{
-    flex:1;
-    padding:8px;
-    border:none;
-    border-radius:6px;
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-  }
+  .historial-item .h-fotos img{width:60px;height:60px;object-fit:cover;border-radius:6px; cursor:pointer; border:1.5px solid var(--azul-200);}
+  .h-actions{display:flex; gap:8px; margin-top:14px; border-top:1px solid var(--azul-200); padding-top:12px;}
+  .h-actions button{flex:1; padding:8px; border:none; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;}
   .btn-pdf{background:#1d4ed8; color:white;}
   .btn-edit{background:#e0e7ff; color:#1d4ed8;}
   .btn-delete{background:#fdecea; color:#c0392b;}
-
-  .empty-state{
-    text-align:center;color:#8095b5;font-size:13px;padding:30px 10px;
-  }
+  .empty-state{text-align:center;color:#8095b5;font-size:13px;padding:30px 10px;}
   .loading{text-align:center;color:var(--azul-500);font-size:13px;padding:20px;}
-
-  /* ESTILOS NUEVOS PARA LA GALERÍA / LIGHTBOX */
-  .lightbox{
-    position:fixed;inset:0;background:rgba(13,42,92,0.95);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    z-index:100;
-  }
-  .lightbox img{
-    max-width:90%;
-    max-height:70vh;
-    border-radius:8px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.5);
-  }
-  .lb-close{
-    position:absolute;top:20px;right:25px;
-    color:white;font-size:40px;cursor:pointer;line-height:1;font-weight:bold;
-    text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
-  }
-  .lb-prev, .lb-next{
-    position:absolute;top:50%;transform:translateY(-50%);
-    color:white;font-size:45px;cursor:pointer;padding:15px;user-select:none;
-    font-weight:bold;
-    text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
-  }
-  .lb-prev{left:5px;}
-  .lb-next{right:5px;}
-  .lb-actions{
-    margin-top:25px;
-  }
-  .lb-actions button{
-    background:var(--azul-500);color:white;border:none;padding:12px 24px;
-    border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;
-    box-shadow:var(--shadow);
-  }
-  .lb-actions button:hover{background:var(--azul-700);}
+  .lightbox{position:fixed;inset:0;background:rgba(13,42,92,0.95); display:flex;flex-direction:column;align-items:center;justify-content:center; z-index:100;}
+  .lightbox img{max-width:90%; max-height:70vh; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+  .lb-close{position:absolute;top:20px;right:25px; color:white;font-size:40px;cursor:pointer;line-height:1;font-weight:bold; text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;}
+  .lb-prev, .lb-next{position:absolute;top:50%;transform:translateY(-50%); color:white;font-size:45px;cursor:pointer;padding:15px;user-select:none; font-weight:bold; text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;}
+  .lb-prev{left:5px;} .lb-next{right:5px;}
+  .lb-actions{margin-top:25px;}
+  .lb-actions button{background:var(--azul-500);color:white;border:none;padding:12px 24px; border-radius:10px;font-size:14px;font-weight:700;cursor:pointer; box-shadow:var(--shadow);}
 </style>
 </head>
 <body>
@@ -433,13 +115,10 @@
 window.onerror = function(msg, url, line, col, err){
   const box = document.getElementById('fatal-error');
   box.style.display = 'block';
-  box.textContent = "Error al cargar la app:\n\n" + msg + "\n(línea " + line + ")\n\n" +
-    "Revisá tu conexión a internet y recargá la página.";
+  box.textContent = "Error al cargar la app:\n\n" + msg + "\n(línea " + line + ")\n\nRevisá tu conexión a internet y recargá la página.";
   return false;
 };
-</script>
 
-<script>
 const SUPABASE_URL = "https://ofejunrkrjybfvbqmzzh.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZWp1bnJrcmp5YmZ2YnFtenpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTYwNzQsImV4cCI6MjA5NzM5MjA3NH0.1Ir-tnr9AYdcu9cq8-l3ZxVkDafebGHlAyobs-MDnxE";
 
@@ -448,21 +127,14 @@ const sb = {
     let url = `${SUPABASE_URL}/rest/v1/${tabla}?select=*`;
     if(order) url += `&order=${order}.${ascending ? 'asc' : 'desc'}`;
     if(limit) url += `&limit=${limit}`;
-    const res = await fetch(url, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-    });
+    const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
     if(!res.ok) return { data:null, error: new Error(await res.text()) };
     return { data: await res.json(), error:null };
   },
   async insert(tabla, payload){
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}`, {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
       body: JSON.stringify(payload)
     });
     if(!res.ok) return { data:null, error: new Error(await res.text()) };
@@ -472,12 +144,7 @@ const sb = {
   async update(tabla, id, payload){
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?id=eq.${id}`, {
       method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
       body: JSON.stringify(payload)
     });
     if(!res.ok) return { data:null, error: new Error(await res.text()) };
@@ -495,57 +162,27 @@ const sb = {
   async uploadFoto(bucket, path, file){
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': file.type || 'application/octet-stream'
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type || 'application/octet-stream' },
       body: file
     });
     if(!res.ok) return { error: new Error(await res.text()) };
     return { error:null };
   },
-  publicUrl(bucket, path){
-    return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
-  }
+  publicUrl(bucket, path){ return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`; }
 };
 
 let state = {
-  operarioNombre: localStorage_safe_get('tb_operario_nombre'),
-  tab: 'nuevo',
-  editId: null, 
-  existingPhotos: [], 
-  searchQuery: '',
-  edificios: [], 
-  historial: [],
-  loadingHistorial: false,
-  photoFiles: [],
-  edifSuggestOpen: false,
-  ingresoError: null,
-  submitLoading: false,
-  submitMsg: null,
-  
-  // VARIABLES DE GALERÍA
-  lightboxImages: [],
-  lightboxIndex: 0,
+  operarioNombre: localStorage.getItem('tb_operario_nombre') || null,
+  tab: 'nuevo', editId: null, existingPhotos: [], searchQuery: '',
+  edificios: [], historial: [], loadingHistorial: false, photoFiles: [],
+  edifSuggestOpen: false, ingresoError: null, submitLoading: false, submitMsg: null,
+  lightboxImages: [], lightboxIndex: 0
 };
-
-function localStorage_safe_get(key){
-  try { return localStorage.getItem(key) || null; } catch(e){ return null; }
-}
-function localStorage_safe_set(key, val){
-  try { localStorage.setItem(key, val); } catch(e){ }
-}
 
 function render(){
   const root = document.getElementById('app');
-  if(!state.operarioNombre){
-    root.innerHTML = renderIngreso();
-    attachIngresoEvents();
-  } else {
-    root.innerHTML = renderApp();
-    attachAppEvents();
-  }
+  if(!state.operarioNombre){ root.innerHTML = renderIngreso(); attachIngresoEvents(); } 
+  else { root.innerHTML = renderApp(); attachAppEvents(); }
 }
 
 function renderIngreso(){
@@ -558,10 +195,7 @@ function renderIngreso(){
         <div class="intro-text">Ingresá tu nombre para empezar a registrar tanques.</div>
         ${state.ingresoError ? `<div class="auth-error">${state.ingresoError}</div>` : ''}
         <form id="ingreso-form">
-          <div class="field">
-            <label>Nombre del operario</label>
-            <input type="text" id="ingreso-nombre" placeholder="Tu nombre y apellido" required autofocus />
-          </div>
+          <div class="field"><label>Nombre del operario</label><input type="text" id="ingreso-nombre" required autofocus /></div>
           <button type="submit" class="btn-primary">Entrar</button>
         </form>
       </div>
@@ -573,24 +207,18 @@ function attachIngresoEvents(){
   document.getElementById('ingreso-form').onsubmit = async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('ingreso-nombre').value.trim();
-    if(!nombre){
-      state.ingresoError = 'Escribí tu nombre para continuar.';
-      render();
-      return;
-    }
+    if(!nombre){ state.ingresoError = 'Escribí tu nombre para continuar.'; render(); return; }
     state.operarioNombre = nombre;
-    localStorage_safe_set('tb_operario_nombre', nombre);
+    localStorage.setItem('tb_operario_nombre', nombre);
     state.ingresoError = null;
-    await cargarEdificios();
-    render();
+    await cargarEdificios(); render();
   };
 }
 
 async function cargarEdificios(){
   const { data, error } = await sb.select('limpiezas_tanques', { order:'created_at', ascending:false, limit:200 });
   if(!error && data) {
-    const unicos = [];
-    const mapa = new Map();
+    const unicos = []; const mapa = new Map();
     for(const item of data) {
       if(item.nombre_edificio && !mapa.has(item.nombre_edificio.toLowerCase())){
         mapa.set(item.nombre_edificio.toLowerCase(), true);
@@ -602,8 +230,7 @@ async function cargarEdificios(){
 }
 
 async function cargarHistorial(){
-  state.loadingHistorial = true;
-  render();
+  state.loadingHistorial = true; render();
   const { data, error } = await sb.select('limpiezas_tanques', { order:'created_at', ascending:false, limit:100 });
   state.loadingHistorial = false;
   if(!error) state.historial = data || [];
@@ -614,20 +241,12 @@ function renderApp(){
   return `
     <div class="topbar">
       <img src="logo.png" class="logo-img-top" alt="Logo" onerror="this.style.display='none'">
-      <div>
-        <h1>TECNO BOMBAS</h1>
-        <div class="sub">SOLUCIONES SUPERIORES</div>
-      </div>
-      <div class="right">
-        <span style="font-size:12px;opacity:0.9;">${esc(state.operarioNombre)}</span>
-        <button class="logout" id="btn-logout">Cambiar</button>
-      </div>
+      <div><h1>TECNO BOMBAS</h1><div class="sub">SOLUCIONES SUPERIORES</div></div>
+      <div class="right"><span style="font-size:12px;opacity:0.9;">${esc(state.operarioNombre)}</span><button class="logout" id="btn-logout">Cambiar</button></div>
     </div>
     <div class="container">
       <div class="tabs">
-        <button class="${state.tab==='nuevo'?'active':''}" id="tab-nuevo">
-          ${state.editId ? '✏️ Editando registro' : '+ Nuevo registro'}
-        </button>
+        <button class="${state.tab==='nuevo'?'active':''}" id="tab-nuevo">${state.editId ? '✏️ Editando registro' : '+ Nuevo registro'}</button>
         <button class="${state.tab==='historial'?'active':''}" id="tab-historial">Historial</button>
       </div>
       ${state.tab === 'nuevo' ? renderFormulario() : renderHistorial()}
@@ -645,9 +264,7 @@ function renderLightbox() {
       ${mostrarFlechas ? `<div class="lb-prev" id="lb-prev">❮</div>` : ''}
       <img src="${url}" />
       ${mostrarFlechas ? `<div class="lb-next" id="lb-next">❯</div>` : ''}
-      <div class="lb-actions">
-        <button id="lb-download">⬇️ Descargar foto</button>
-      </div>
+      <div class="lb-actions"><button id="lb-download">⬇️ Descargar foto</button></div>
     </div>
   `;
 }
@@ -659,64 +276,38 @@ function renderFormulario(){
       <div class="field edif-suggestions">
         <label>Nombre del edificio</label>
         <input type="text" id="f-nombre-edificio" placeholder="Ej: Torre Norte..." autocomplete="off" value="${esc(state.formNombreEdificio||'')}" />
-        <div id="suggestions-container">
-          ${state.edifSuggestOpen ? renderSuggestions() : ''}
-        </div>
+        <div id="suggestions-container">${state.edifSuggestOpen ? renderSuggestions() : ''}</div>
       </div>
       <div class="dir-row">
-        <div class="field">
-          <label>Dirección</label>
-          <input type="text" id="f-direccion" placeholder="Calle, número, ciudad" value="${esc(state.formDireccion||'')}" />
-        </div>
+        <div class="field"><label>Dirección</label><input type="text" id="f-direccion" placeholder="Calle, número, ciudad" value="${esc(state.formDireccion||'')}" /></div>
         <button type="button" class="map-btn" id="btn-maps" title="Ver en Google Maps">🗺️</button>
       </div>
     </div>
-
     <div class="card">
       <h3>💧 Niveles de tanque</h3>
-      
       <label style="font-size:12px; font-weight:600; color:var(--azul-900); display:block; margin-bottom:5px;">Tanques Superiores</label>
       <div class="row-niveles">
-        <div class="field" style="margin-bottom:0;">
-          <input type="number" id="f-cant-sup" placeholder="Cant." min="0" value="${state.formCantSup||''}" />
-        </div>
-        <div class="field" style="margin-bottom:0;">
-          <input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Litros (Ej: 12000)" value="${state.formLitrosSup||''}" />
-        </div>
+        <div class="field" style="margin-bottom:0;"><input type="number" id="f-cant-sup" placeholder="Cant." min="0" value="${state.formCantSup||''}" /></div>
+        <div class="field" style="margin-bottom:0;"><input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Litros (Ej: 12000)" value="${state.formLitrosSup||''}" /></div>
       </div>
-      
       <div style="height:14px;"></div>
-      
       <label style="font-size:12px; font-weight:600; color:var(--azul-900); display:block; margin-bottom:5px;">Tanques Inferiores</label>
       <div class="row-niveles">
-        <div class="field" style="margin-bottom:0;">
-          <input type="number" id="f-cant-inf" placeholder="Cant." min="0" value="${state.formCantInf||''}" />
-        </div>
-        <div class="field" style="margin-bottom:0;">
-          <input type="text" inputmode="numeric" id="f-litros-inf" placeholder="Litros (Ej: 12000)" value="${state.formLitrosInf||''}" />
-        </div>
+        <div class="field" style="margin-bottom:0;"><input type="number" id="f-cant-inf" placeholder="Cant." min="0" value="${state.formCantInf||''}" /></div>
+        <div class="field" style="margin-bottom:0;"><input type="text" inputmode="numeric" id="f-litros-inf" placeholder="Litros (Ej: 12000)" value="${state.formLitrosInf||''}" /></div>
       </div>
     </div>
-
     <div class="card">
       <h3>📝 Detalles</h3>
-      <div class="field">
-        <label>Observación (Números de teléfono serán clickeables)</label>
-        <textarea id="f-observacion" rows="3" placeholder="Notas sobre el estado, teléfonos de contacto...">${esc(state.formObservacion||'')}</textarea>
-      </div>
+      <div class="field"><label>Observación (Números de teléfono serán clickeables)</label><textarea id="f-observacion" rows="3">${esc(state.formObservacion||'')}</textarea></div>
       <div class="field">
         <label>Fotos</label>
-        <div class="photo-input-area" id="photo-trigger">
-          📷 Tocar para agregar nuevas fotos
-        </div>
+        <div class="photo-input-area" id="photo-trigger">📷 Tocar para agregar nuevas fotos</div>
         <input type="file" id="photo-input" accept="image/*" multiple style="display:none" />
         <div class="photo-previews" id="photo-previews"></div>
       </div>
     </div>
-
-    <button class="btn-primary" id="btn-submit" ${state.submitLoading?'disabled':''}>
-      ${state.submitLoading ? 'Guardando...' : (state.editId ? 'Actualizar registro' : 'Guardar registro')}
-    </button>
+    <button class="btn-primary" id="btn-submit" ${state.submitLoading?'disabled':''}>${state.submitLoading ? 'Guardando...' : (state.editId ? 'Actualizar registro' : 'Guardar registro')}</button>
     ${state.editId ? `<button class="btn-cancelar" id="btn-cancel-edit">Cancelar edición</button>` : ''}
     ${state.submitMsg ? `<div class="submit-msg ${state.submitMsg.ok?'ok':'err'}">${state.submitMsg.text}</div>` : ''}
   `;
@@ -726,48 +317,23 @@ function renderSuggestions(){
   const q = (state.formNombreEdificio||'').toLowerCase();
   const matches = state.edificios.filter(e => e.nombre.toLowerCase().includes(q)).slice(0,6);
   if(matches.length === 0) return '';
-  return `<div class="suggestion-list">
-    ${matches.map(e => `
-      <div class="suggestion-item" data-nombre="${esc(e.nombre)}" data-direccion="${esc(e.direccion)}">
-        <div>${esc(e.nombre)}</div>
-        <div class="s-dir">${esc(e.direccion)}</div>
-      </div>
-    `).join('')}
-  </div>`;
+  return `<div class="suggestion-list">${matches.map(e => `<div class="suggestion-item" data-nombre="${esc(e.nombre)}" data-direccion="${esc(e.direccion)}"><div>${esc(e.nombre)}</div><div class="s-dir">${esc(e.direccion)}</div></div>`).join('')}</div>`;
 }
 
-// NUEVO RENDER DEL HISTORIAL (OPTIMIZADO PARA BUSCADOR CSS)
 function renderHistorial(){
-  let html = `
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="h-buscador" placeholder="Buscar por nombre de edificio..." value="${esc(state.searchQuery)}" />
-    </div>
-  `;
+  let html = `<div class="search-box"><span>🔍</span><input type="text" id="h-buscador" placeholder="Buscar por nombre de edificio..." value="${esc(state.searchQuery)}" /></div>`;
+  if(state.loadingHistorial) return html + `<div class="loading">Cargando historial...</div>`;
+  if(state.historial.length === 0) return html + `<div class="card"><div class="empty-state">No hay registros todavía.</div></div>`;
 
-  if(state.loadingHistorial) {
-    return html + `<div class="loading">Cargando historial...</div>`;
-  }
-
-  if(state.historial.length === 0) {
-    return html + `<div class="card"><div class="empty-state">No hay registros todavía.</div></div>`;
-  }
-
-  const query = (state.searchQuery || '').toLowerCase();
-  let visibles = 0;
-
+  const query = (state.searchQuery || '').toLowerCase(); let visibles = 0;
   let itemsHtml = state.historial.map(item => {
     const nombreBusqueda = (item.nombre_edificio || '').toLowerCase();
     const match = !query || nombreBusqueda.includes(query);
     if(match) visibles++;
-    
     return `
     <div class="historial-item" data-search="${esc(nombreBusqueda)}" style="display:${match ? 'block' : 'none'}">
       <div class="h-top">
-        <div>
-          <div class="h-edif">${esc(item.nombre_edificio)}</div>
-          <div class="h-dir" data-dir="${esc(item.direccion)}">📍 ${esc(item.direccion)}</div>
-        </div>
+        <div><div class="h-edif">${esc(item.nombre_edificio)}</div><div class="h-dir" data-dir="${esc(item.direccion)}">📍 ${esc(item.direccion)}</div></div>
         <div class="h-fecha">${formatFecha(item.created_at)}</div>
       </div>
       <div class="h-litros">
@@ -776,146 +342,61 @@ function renderHistorial(){
       </div>
       ${item.operario_nombre ? `<div class="h-op">👤 ${esc(item.operario_nombre)}</div>` : ''}
       ${item.observacion ? `<div class="h-obs">"${formatTelefonos(item.observacion)}"</div>` : ''}
-      ${item.fotos && item.fotos.length ? `
-        <div class="h-fotos">
-          ${item.fotos.map((url, index) => `<img src="${url}" data-id="${item.id}" data-index="${index}" class="galeria-trigger" />`).join('')}
-        </div>` : ''}
-      
+      ${item.fotos && item.fotos.length ? `<div class="h-fotos">${item.fotos.map((url, index) => `<img src="${url}" data-id="${item.id}" data-index="${index}" class="galeria-trigger" />`).join('')}</div>` : ''}
       <div class="h-actions">
         <button class="btn-pdf" onclick="window.descargarPDF('${item.id}')">📄 PDF</button>
         <button class="btn-edit" onclick="window.editarRegistro('${item.id}')">✏️ Editar</button>
         <button class="btn-delete" onclick="window.eliminarRegistro('${item.id}')">🗑️ Eliminar</button>
       </div>
-    </div>
-  `}).join('');
+    </div>`}).join('');
 
-  html += `<div id="empty-search" class="card" style="display:${visibles === 0 ? 'block' : 'none'}">
-             <div class="empty-state">No se encontraron registros para esa búsqueda.</div>
-           </div>`;
-           
-  html += itemsHtml;
-  return html;
+  html += `<div id="empty-search" class="card" style="display:${visibles === 0 ? 'block' : 'none'}"><div class="empty-state">No se encontraron registros para esa búsqueda.</div></div>`;
+  html += itemsHtml; return html;
 }
 
 function formatFecha(iso){
-  if(!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'2-digit' }) + ' ' +
-         d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+  if(!iso) return ''; const d = new Date(iso);
+  return d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'2-digit' }) + ' ' + d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
 }
-
-function formatNumber(num) {
-  if (num === null || num === undefined || num === '') return '-';
-  return Number(num).toLocaleString('es-AR');
-}
-
-function esc(s) {
-  if (s === undefined || s === null) return '';
-  return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, ''');
-}
-
-function formatTelefonos(texto) {
-  if(!texto) return '';
-  const seguro = esc(texto);
-  return seguro.replace(/\b(\d{8,9})\b/g, '<a href="tel:$1" style="color:#1d4ed8; text-decoration:underline; font-weight:bold;">$1</a>');
-}
+function formatNumber(num) { if (num === null || num === undefined || num === '') return '-'; return Number(num).toLocaleString('es-AR'); }
+function esc(s) { if (s === undefined || s === null) return ''; return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, '''); }
+function formatTelefonos(texto) { if(!texto) return ''; const seguro = esc(texto); return seguro.replace(/\b(\d{8,9})\b/g, '<a href="tel:$1" style="color:#1d4ed8; text-decoration:underline; font-weight:bold;">$1</a>'); }
 
 function attachAppEvents(){
-  document.getElementById('btn-logout').onclick = () => {
-    localStorage_safe_set('tb_operario_nombre', '');
-    state.operarioNombre = null;
-    render();
-  };
-
+  document.getElementById('btn-logout').onclick = () => { localStorage.removeItem('tb_operario_nombre'); state.operarioNombre = null; render(); };
   document.getElementById('tab-nuevo').onclick = () => { state.tab='nuevo'; render(); };
-  document.getElementById('tab-historial').onclick = () => {
-    state.tab='historial';
-    render();
-    cargarHistorial();
-  };
+  document.getElementById('tab-historial').onclick = () => { state.tab='historial'; render(); cargarHistorial(); };
+  if(state.tab === 'nuevo') attachFormEvents();
 
-  if(state.tab === 'nuevo'){
-    attachFormEvents();
-  }
-
-  // BUSCADOR OPTIMIZADO (Sin recargar la página)
   if(state.tab === 'historial'){
     const buscador = document.getElementById('h-buscador');
     if(buscador) {
       buscador.oninput = (e) => {
-        state.searchQuery = e.target.value;
-        const queryBusqueda = state.searchQuery.toLowerCase();
-        let visibles = 0;
-        
+        state.searchQuery = e.target.value; const queryBusqueda = state.searchQuery.toLowerCase(); let visibles = 0;
         document.querySelectorAll('.historial-item').forEach(el => {
-          if (el.getAttribute('data-search').includes(queryBusqueda)) {
-            el.style.display = 'block';
-            visibles++;
-          } else {
-            el.style.display = 'none';
-          }
+          if (el.getAttribute('data-search').includes(queryBusqueda)) { el.style.display = 'block'; visibles++; } else { el.style.display = 'none'; }
         });
-        
-        const emptyMsg = document.getElementById('empty-search');
-        if(emptyMsg) emptyMsg.style.display = visibles === 0 ? 'block' : 'none';
+        const emptyMsg = document.getElementById('empty-search'); if(emptyMsg) emptyMsg.style.display = visibles === 0 ? 'block' : 'none';
       };
     }
   }
 
-  document.querySelectorAll('.h-dir').forEach(el => {
-    el.onclick = () => {
-      const dir = el.getAttribute('data-dir');
-      window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dir), '_blank');
-    };
-  });
-
+  document.querySelectorAll('.h-dir').forEach(el => { el.onclick = () => { window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(el.getAttribute('data-dir')), '_blank'); }; });
   document.querySelectorAll('.galeria-trigger').forEach(img => {
     img.onclick = () => { 
-      const id = img.getAttribute('data-id');
-      const idx = parseInt(img.getAttribute('data-index'));
-      const item = state.historial.find(x => x.id === id);
-      state.lightboxImages = item.fotos;
-      state.lightboxIndex = idx;
-      render(); 
+      const item = state.historial.find(x => x.id === img.getAttribute('data-id'));
+      state.lightboxImages = item.fotos; state.lightboxIndex = parseInt(img.getAttribute('data-index')); render(); 
     };
   });
 
   if(state.lightboxImages.length > 0){
     document.getElementById('lb-close').onclick = () => { state.lightboxImages = []; render(); };
-    document.getElementById('lightbox').onclick = (e) => {
-      if(e.target.id === 'lightbox') { state.lightboxImages = []; render(); }
-    };
-    if(document.getElementById('lb-prev')){
-      document.getElementById('lb-prev').onclick = (e) => {
-        e.stopPropagation();
-        state.lightboxIndex = (state.lightboxIndex - 1 + state.lightboxImages.length) % state.lightboxImages.length;
-        render();
-      };
-    }
-    if(document.getElementById('lb-next')){
-      document.getElementById('lb-next').onclick = (e) => {
-        e.stopPropagation();
-        state.lightboxIndex = (state.lightboxIndex + 1) % state.lightboxImages.length;
-        render();
-      };
-    }
+    document.getElementById('lightbox').onclick = (e) => { if(e.target.id === 'lightbox') { state.lightboxImages = []; render(); } };
+    if(document.getElementById('lb-prev')) document.getElementById('lb-prev').onclick = (e) => { e.stopPropagation(); state.lightboxIndex = (state.lightboxIndex - 1 + state.lightboxImages.length) % state.lightboxImages.length; render(); };
+    if(document.getElementById('lb-next')) document.getElementById('lb-next').onclick = (e) => { e.stopPropagation(); state.lightboxIndex = (state.lightboxIndex + 1) % state.lightboxImages.length; render(); };
     document.getElementById('lb-download').onclick = async (e) => {
-      e.stopPropagation();
-      const url = state.lightboxImages[state.lightboxIndex];
-      try {
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = "foto_tanque_" + Date.now() + ".jpg";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      } catch(err) {
-        window.open(url, '_blank');
-      }
+      e.stopPropagation(); const url = state.lightboxImages[state.lightboxIndex];
+      try { const res = await fetch(url); const blob = await res.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "foto_tanque_" + Date.now() + ".jpg"; document.body.appendChild(a); a.click(); document.body.removeChild(a); } catch(err) { window.open(url, '_blank'); }
     };
   }
 }
@@ -923,338 +404,117 @@ function attachAppEvents(){
 function attachFormEvents(){
   const nombreInput = document.getElementById('f-nombre-edificio');
   const containerSugerencias = document.getElementById('suggestions-container');
-
   const asignarEventosItems = () => {
     document.querySelectorAll('.suggestion-item').forEach(el => {
       el.onclick = () => {
-        state.formNombreEdificio = el.getAttribute('data-nombre');
-        state.formDireccion = el.getAttribute('data-direccion');
-        state.edifSuggestOpen = false;
-        
-        nombreInput.value = state.formNombreEdificio;
-        document.getElementById('f-direccion').value = state.formDireccion;
-        containerSugerencias.innerHTML = '';
+        state.formNombreEdificio = el.getAttribute('data-nombre'); state.formDireccion = el.getAttribute('data-direccion'); state.edifSuggestOpen = false;
+        nombreInput.value = state.formNombreEdificio; document.getElementById('f-direccion').value = state.formDireccion; containerSugerencias.innerHTML = '';
       };
     });
   };
 
   nombreInput.oninput = (e) => {
-    state.formNombreEdificio = e.target.value;
-    state.edifSuggestOpen = e.target.value.length > 0;
-    
-    if (state.edifSuggestOpen) {
-      containerSugerencias.innerHTML = renderSuggestions();
-      asignarEventosItems();
-    } else {
-      containerSugerencias.innerHTML = '';
-    }
+    state.formNombreEdificio = e.target.value; state.edifSuggestOpen = e.target.value.length > 0;
+    if (state.edifSuggestOpen) { containerSugerencias.innerHTML = renderSuggestions(); asignarEventosItems(); } else { containerSugerencias.innerHTML = ''; }
   };
-
-  nombreInput.onfocus = () => {
-    if (state.formNombreEdificio && state.formNombreEdificio.length > 0) {
-      state.edifSuggestOpen = true;
-      containerSugerencias.innerHTML = renderSuggestions();
-      asignarEventosItems();
-    }
-  };
-
-  const dirInput = document.getElementById('f-direccion');
-  dirInput.oninput = (e) => { state.formDireccion = e.target.value; };
-
-  document.getElementById('btn-maps').onclick = () => {
-    const dir = document.getElementById('f-direccion').value.trim();
-    if(!dir){ alert('Escribí una dirección primero.'); return; }
-    window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dir), '_blank');
-  };
-
-  document.getElementById('photo-trigger').onclick = () => {
-    document.getElementById('photo-input').click();
-  };
-  document.getElementById('photo-input').onchange = (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(f => state.photoFiles.push(f));
-    renderPhotoPreviews();
-  };
-
+  nombreInput.onfocus = () => { if (state.formNombreEdificio && state.formNombreEdificio.length > 0) { state.edifSuggestOpen = true; containerSugerencias.innerHTML = renderSuggestions(); asignarEventosItems(); } };
+  document.getElementById('f-direccion').oninput = (e) => { state.formDireccion = e.target.value; };
+  document.getElementById('btn-maps').onclick = () => { const dir = document.getElementById('f-direccion').value.trim(); if(!dir){ alert('Escribí una dirección primero.'); return; } window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(dir), '_blank'); };
+  document.getElementById('photo-trigger').onclick = () => { document.getElementById('photo-input').click(); };
+  document.getElementById('photo-input').onchange = (e) => { Array.from(e.target.files).forEach(f => state.photoFiles.push(f)); renderPhotoPreviews(); };
   document.getElementById('btn-submit').onclick = handleSubmit;
-
-  if(document.getElementById('btn-cancel-edit')){
-    document.getElementById('btn-cancel-edit').onclick = limpiarFormulario;
-  }
-
+  if(document.getElementById('btn-cancel-edit')) document.getElementById('btn-cancel-edit').onclick = limpiarFormulario;
   renderPhotoPreviews();
 }
 
 function renderPhotoPreviews(){
-  const cont = document.getElementById('photo-previews');
-  if(!cont) return;
-  
-  let html = state.existingPhotos.map((url, i) => `
-    <div class="photo-thumb">
-      <img src="${url}" />
-      <button class="remove" onclick="window.quitarFotoExistente(${i})">×</button>
-    </div>
-  `).join('');
-
-  html += state.photoFiles.map((f, i) => `
-    <div class="photo-thumb" style="border-color:#1f8a4c;">
-      <img src="${URL.createObjectURL(f)}" />
-      <button class="remove" onclick="window.quitarFotoNueva(${i})">×</button>
-    </div>
-  `).join('');
-  
+  const cont = document.getElementById('photo-previews'); if(!cont) return;
+  let html = state.existingPhotos.map((url, i) => `<div class="photo-thumb"><img src="${url}" /><button class="remove" onclick="window.quitarFotoExistente(${i})">×</button></div>`).join('');
+  html += state.photoFiles.map((f, i) => `<div class="photo-thumb" style="border-color:#1f8a4c;"><img src="${URL.createObjectURL(f)}" /><button class="remove" onclick="window.quitarFotoNueva(${i})">×</button></div>`).join('');
   cont.innerHTML = html;
 }
 
-window.quitarFotoExistente = function(index) {
-  state.existingPhotos.splice(index, 1);
-  renderPhotoPreviews();
-};
-
-window.quitarFotoNueva = function(index) {
-  state.photoFiles.splice(index, 1);
-  renderPhotoPreviews();
-};
+window.quitarFotoExistente = function(index) { state.existingPhotos.splice(index, 1); renderPhotoPreviews(); };
+window.quitarFotoNueva = function(index) { state.photoFiles.splice(index, 1); renderPhotoPreviews(); };
 
 window.editarRegistro = function(id) {
-  const item = state.historial.find(x => x.id === id);
-  if(!item) return;
-
-  state.editId = item.id;
-  state.formNombreEdificio = item.nombre_edificio;
-  state.formDireccion = item.direccion;
-  state.formLitrosSup = item.litros_superior;
-  state.formCantSup = item.cantidad_superior;
-  state.formLitrosInf = item.litros_inferior;
-  state.formCantInf = item.cantidad_inferior;
-  state.formObservacion = item.observacion;
-  state.existingPhotos = item.fotos ? [...item.fotos] : [];
-  state.photoFiles = [];
-  
-  state.submitMsg = null;
-  state.tab = 'nuevo';
-  render();
+  const item = state.historial.find(x => x.id === id); if(!item) return;
+  state.editId = item.id; state.formNombreEdificio = item.nombre_edificio; state.formDireccion = item.direccion;
+  state.formLitrosSup = item.litros_superior; state.formCantSup = item.cantidad_superior;
+  state.formLitrosInf = item.litros_inferior; state.formCantInf = item.cantidad_inferior;
+  state.formObservacion = item.observacion; state.existingPhotos = item.fotos ? [...item.fotos] : []; state.photoFiles = [];
+  state.submitMsg = null; state.tab = 'nuevo'; render();
 };
 
 window.eliminarRegistro = async function(id) {
-  const clave = prompt("🔒 ACCIÓN PROTEGIDA:\nPor favor, ingresá la contraseña para eliminar este registro:");
-  if (clave !== "1999") {
-    if (clave !== null) alert("❌ Contraseña incorrecta. Acción cancelada.");
-    return;
-  }
-
+  const clave = prompt("🔒 ACCIÓN PROTEGIDA:\\nPor favor, ingresá la contraseña para eliminar este registro:");
+  if (clave !== "1999") { if (clave !== null) alert("❌ Contraseña incorrecta. Acción cancelada."); return; }
   if(!confirm('¿Estás seguro que querés eliminar este registro permanentemente?')) return;
-  
-  state.loadingHistorial = true;
-  render();
-
+  state.loadingHistorial = true; render();
   const { error } = await sb.delete('limpiezas_tanques', id);
-  if(error) {
-    alert("Error al eliminar: " + error.message);
-    state.loadingHistorial = false;
-    render();
-  } else {
-    await cargarHistorial();
-  }
+  if(error) { alert("Error al eliminar: " + error.message); state.loadingHistorial = false; render(); } else { await cargarHistorial(); }
 };
 
 window.descargarPDF = function(id) {
-  const item = state.historial.find(x => x.id === id);
-  if(!item) return;
-
-  const tempDiv = document.createElement('div');
-  tempDiv.style.padding = '30px';
-  tempDiv.style.fontFamily = 'Arial, sans-serif';
-  tempDiv.style.color = '#111';
-  
-  const fotosHtml = (item.fotos && item.fotos.length > 0) ? `
-    <div style="margin-top:30px;">
-      <h3 style="font-size:16px; border-bottom:1px solid #ccc; padding-bottom:5px; color:#1d4ed8;">Evidencia Fotográfica</h3>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:15px;">
-        ${item.fotos.map(url => `<img src="${url}" crossorigin="anonymous" style="width:230px; height:230px; object-fit:cover; border-radius:8px;" />`).join('')}
-      </div>
-    </div>
-  ` : '';
-
+  const item = state.historial.find(x => x.id === id); if(!item) return;
+  const tempDiv = document.createElement('div'); tempDiv.style.padding = '30px'; tempDiv.style.fontFamily = 'Arial, sans-serif'; tempDiv.style.color = '#111';
+  const fotosHtml = (item.fotos && item.fotos.length > 0) ? `<div style="margin-top:30px;"><h3 style="font-size:16px; border-bottom:1px solid #ccc; padding-bottom:5px; color:#1d4ed8;">Evidencia Fotográfica</h3><div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:15px;">${item.fotos.map(url => `<img src="${url}" crossorigin="anonymous" style="width:230px; height:230px; object-fit:cover; border-radius:8px;" />`).join('')}</div></div>` : '';
   tempDiv.innerHTML = `
     <div style="border-bottom:3px solid #1d4ed8; padding-bottom:15px; margin-bottom:25px; display:flex; justify-content:space-between; align-items:flex-end;">
-      <div>
-        <h1 style="color:#1d4ed8; margin:0; font-size:28px; font-weight:900;">TECNO BOMBAS</h1>
-        <p style="margin:0; font-size:14px; color:#555; letter-spacing:1px;">SOLUCIONES SUPERIORES</p>
-      </div>
-      <div style="text-align:right; font-size:13px; color:#555;">
-        <b>Fecha de registro:</b><br/>
-        ${formatFecha(item.created_at)}
-      </div>
+      <div><h1 style="color:#1d4ed8; margin:0; font-size:28px; font-weight:900;">TECNO BOMBAS</h1><p style="margin:0; font-size:14px; color:#555; letter-spacing:1px;">SOLUCIONES SUPERIORES</p></div>
+      <div style="text-align:right; font-size:13px; color:#555;"><b>Fecha de registro:</b><br/>${formatFecha(item.created_at)}</div>
     </div>
-
-    <div style="background:#f3f8fd; padding:15px; border-radius:10px; margin-bottom:25px;">
-      <h2 style="font-size:20px; margin:0 0 5px 0; color:#0d2a5c;">${esc(item.nombre_edificio)}</h2>
-      <p style="margin:0; font-size:14px; color:#444;">📍 ${esc(item.direccion)}</p>
-    </div>
-
+    <div style="background:#f3f8fd; padding:15px; border-radius:10px; margin-bottom:25px;"><h2 style="font-size:20px; margin:0 0 5px 0; color:#0d2a5c;">${esc(item.nombre_edificio)}</h2><p style="margin:0; font-size:14px; color:#444;">📍 ${esc(item.direccion)}</p></div>
     <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:14px;">
-      <tr>
-        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; width:35%; background:#fafafa;">Tanques Superiores</td>
-        <td style="padding:12px; border:1px solid #ccc; width:65%;">${item.cantidad_superior ? item.cantidad_superior + ' unid. x ' : ''}${formatNumber(item.litros_superior)} Litros</td>
-      </tr>
-      <tr>
-        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Tanques Inferiores</td>
-        <td style="padding:12px; border:1px solid #ccc;">${item.cantidad_inferior ? item.cantidad_inferior + ' unid. x ' : ''}${formatNumber(item.litros_inferior)} Litros</td>
-      </tr>
-      <tr>
-        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Operario a cargo</td>
-        <td style="padding:12px; border:1px solid #ccc;">👤 ${esc(item.operario_nombre)}</td>
-      </tr>
+      <tr><td style="padding:12px; border:1px solid #ccc; font-weight:bold; width:35%; background:#fafafa;">Tanques Superiores</td><td style="padding:12px; border:1px solid #ccc; width:65%;">${item.cantidad_superior ? item.cantidad_superior + ' unid. x ' : ''}${formatNumber(item.litros_superior)} Litros</td></tr>
+      <tr><td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Tanques Inferiores</td><td style="padding:12px; border:1px solid #ccc;">${item.cantidad_inferior ? item.cantidad_inferior + ' unid. x ' : ''}${formatNumber(item.litros_inferior)} Litros</td></tr>
+      <tr><td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Operario a cargo</td><td style="padding:12px; border:1px solid #ccc;">👤 ${esc(item.operario_nombre)}</td></tr>
     </table>
-
-    <div style="margin-bottom:25px;">
-      <h3 style="font-size:16px; border-bottom:1px solid #ccc; padding-bottom:5px; color:#1d4ed8;">Observaciones</h3>
-      <p style="font-size:14px; line-height:1.6; color:#333;">${esc(item.observacion) || 'Sin observaciones detalladas.'}</p>
-    </div>
-
+    <div style="margin-bottom:25px;"><h3 style="font-size:16px; border-bottom:1px solid #ccc; padding-bottom:5px; color:#1d4ed8;">Observaciones</h3><p style="font-size:14px; line-height:1.6; color:#333;">${esc(item.observacion) || 'Sin observaciones detalladas.'}</p></div>
     ${fotosHtml}
   `;
-
-  const opt = {
-    margin:       15,
-    filename:     `Reporte_Tanques_${item.nombre_edificio.replace(/\s+/g, '_')}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true }, 
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(tempDiv).save();
+  html2pdf().set({ margin:15, filename:`Reporte_Tanques_${item.nombre_edificio.replace(/\s+/g, '_')}.pdf`, image:{ type:'jpeg', quality:0.98 }, html2canvas:{ scale:2, useCORS:true }, jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' } }).from(tempDiv).save();
 };
 
 function limpiarFormulario() {
-  state.editId = null;
-  state.photoFiles = [];
-  state.existingPhotos = [];
-  state.formNombreEdificio = '';
-  state.formDireccion = '';
-  state.formLitrosSup = '';
-  state.formLitrosInf = '';
-  state.formCantSup = '';
-  state.formCantInf = '';
-  state.formObservacion = '';
-  state.submitMsg = null;
-  render();
+  state.editId = null; state.photoFiles = []; state.existingPhotos = [];
+  state.formNombreEdificio = ''; state.formDireccion = ''; state.formLitrosSup = ''; state.formLitrosInf = ''; state.formCantSup = ''; state.formCantInf = ''; state.formObservacion = ''; state.submitMsg = null; render();
 }
 
 async function handleSubmit(){
   const nombreEdificio = (document.getElementById('f-nombre-edificio').value || '').trim();
   const direccion = (document.getElementById('f-direccion').value || '').trim();
-  
-  const rawCantSup = document.getElementById('f-cant-sup').value;
-  const rawCantInf = document.getElementById('f-cant-inf').value;
-  const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null;
-  const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
-
-  // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
-  const rawLitrosSup = document.getElementById('f-litros-sup').value;
-  const rawLitrosInf = document.getElementById('f-litros-inf').value;
-  
-  function parseLitros(val) {
-    if(!val) return null;
-    const num = parseInt(val.replace(/\./g, '').replace(/,/g, ''), 10);
-    return isNaN(num) ? null : num;
-  }
-
-  const litrosSup = parseLitros(rawLitrosSup);
-  const litrosInf = parseLitros(rawLitrosInf);
-
+  const rawCantSup = document.getElementById('f-cant-sup').value; const rawCantInf = document.getElementById('f-cant-inf').value;
+  const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null; const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
+  const rawLitrosSup = document.getElementById('f-litros-sup').value; const rawLitrosInf = document.getElementById('f-litros-inf').value;
+  function parseLitros(val) { if(!val) return null; const num = parseInt(val.replace(/\./g, '').replace(/,/g, ''), 10); return isNaN(num) ? null : num; }
+  const litrosSup = parseLitros(rawLitrosSup); const litrosInf = parseLitros(rawLitrosInf);
   const observacion = document.getElementById('f-observacion').value.trim();
 
-  if(!nombreEdificio || !direccion){
-    state.submitMsg = { ok:false, text:'Completá nombre del edificio y dirección.' };
-    render();
-    return;
-  }
-
-  state.submitLoading = true;
-  state.submitMsg = null;
-  render();
+  if(!nombreEdificio || !direccion){ state.submitMsg = { ok:false, text:'Completá nombre del edificio y dirección.' }; render(); return; }
+  state.submitLoading = true; state.submitMsg = null; render();
 
   try {
     const nuevasFotoUrls = [];
     for(const file of state.photoFiles){
-      const ext = file.name.split('.').pop() || 'jpg';
-      const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: upErr } = await sb.uploadFoto('fotos-tanques', path, file);
-      if(upErr) throw upErr;
-      nuevasFotoUrls.push(sb.publicUrl('fotos-tanques', path));
+      const ext = file.name.split('.').pop() || 'jpg'; const path = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: upErr } = await sb.uploadFoto('fotos-tanques', path, file); if(upErr) throw upErr; nuevasFotoUrls.push(sb.publicUrl('fotos-tanques', path));
     }
-
-    const todasLasFotos = [...state.existingPhotos, ...nuevasFotoUrls];
-
-    const payload = {
-      direccion: direccion,
-      nombre_edificio: nombreEdificio,
-      cantidad_superior: cantSup,
-      litros_superior: litrosSup,
-      cantidad_inferior: cantInf,
-      litros_inferior: litrosInf,
-      operario_nombre: state.operarioNombre,
-      observacion: observacion || null,
-      fotos: todasLasFotos
-    };
-
+    const payload = { direccion: direccion, nombre_edificio: nombreEdificio, cantidad_superior: cantSup, litros_superior: litrosSup, cantidad_inferior: cantInf, litros_inferior: litrosInf, operario_nombre: state.operarioNombre, observacion: observacion || null, fotos: [...state.existingPhotos, ...nuevasFotoUrls] };
     let errResult;
-    if(state.editId) {
-      const { error } = await sb.update('limpiezas_tanques', state.editId, payload);
-      errResult = error;
-    } else {
-      const { error } = await sb.insert('limpiezas_tanques', payload);
-      errResult = error;
-    }
-
+    if(state.editId) { const { error } = await sb.update('limpiezas_tanques', state.editId, payload); errResult = error; } else { const { error } = await sb.insert('limpiezas_tanques', payload); errResult = error; }
     if(errResult) throw errResult;
-
-    state.submitLoading = false;
-    state.submitMsg = { ok:true, text: state.editId ? '✓ Registro actualizado correctamente.' : '✓ Registro guardado correctamente.' };
-    
-    setTimeout(() => {
-      limpiarFormulario();
-      cargarEdificios();
-    }, 1500);
-
-  } catch(err){
-    state.submitLoading = false;
-    state.submitMsg = { ok:false, text:'Error: ' + err.message };
-    render();
-  }
+    state.submitLoading = false; state.submitMsg = { ok:true, text: state.editId ? '✓ Registro actualizado correctamente.' : '✓ Registro guardado correctamente.' };
+    setTimeout(() => { limpiarFormulario(); cargarEdificios(); }, 1500);
+  } catch(err){ state.submitLoading = false; state.submitMsg = { ok:false, text:'Error: ' + err.message }; render(); }
 }
 
 async function init(){
-  document.addEventListener('click', (e) => {
-    if(state.edifSuggestOpen && !e.target.closest('.edif-suggestions')){
-      state.edifSuggestOpen = false;
-      const sugCont = document.getElementById('suggestions-container');
-      if (sugCont) sugCont.innerHTML = '';
-    }
-  });
-  if(state.operarioNombre){
-    await cargarEdificios();
-  }
-  render();
+  document.addEventListener('click', (e) => { if(state.edifSuggestOpen && !e.target.closest('.edif-suggestions')){ state.edifSuggestOpen = false; const sugCont = document.getElementById('suggestions-container'); if (sugCont) sugCont.innerHTML = ''; } });
+  if(state.operarioNombre) await cargarEdificios(); render();
 }
 
 init();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-    
-
-
-
-
-
-
-    
