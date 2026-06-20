@@ -403,11 +403,15 @@
   .lb-close{
     position:absolute;top:20px;right:25px;
     color:white;font-size:40px;cursor:pointer;line-height:1;font-weight:bold;
+    /* Sombra fuerte para que resalte en fondos blancos */
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
   }
   .lb-prev, .lb-next{
     position:absolute;top:50%;transform:translateY(-50%);
-    color:white;font-size:40px;cursor:pointer;padding:20px;user-select:none;
+    color:white;font-size:45px;cursor:pointer;padding:15px;user-select:none;
     font-weight:bold;
+    /* Sombra fuerte (contorno) para que resalte en fondos blancos */
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
   }
   .lb-prev{left:5px;}
   .lb-next{right:5px;}
@@ -684,11 +688,11 @@ function renderFormulario(){
       <div class="row2">
         <div class="field">
           <label>Tanque superior (litros)</label>
-          <input type="number" id="f-litros-sup" placeholder="0" min="0" value="${state.formLitrosSup||''}" />
+          <input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Ej: 12000" value="${state.formLitrosSup||''}" />
         </div>
         <div class="field">
           <label>Tanque inferior (litros)</label>
-          <input type="number" id="f-litros-inf" placeholder="0" min="0" value="${state.formLitrosInf||''}" />
+          <input type="text" inputmode="numeric" id="f-litros-inf" placeholder="Ej: 12000" value="${state.formLitrosInf||''}" />
         </div>
       </div>
     </div>
@@ -797,15 +801,14 @@ function formatNumber(num) {
   return Number(num).toLocaleString('es-AR');
 }
 
-// FUNCIÓN ESC PARA PREVENIR ERRORES (100% SEGURA)
 function esc(s) {
   if (s === undefined || s === null) return '';
   return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
+    .replace(/'/g, ''');
 }
 
 function attachAppEvents(){
@@ -894,7 +897,6 @@ function attachAppEvents(){
         document.body.removeChild(a);
         URL.revokeObjectURL(blobUrl);
       } catch(err) {
-        // Fallback por si la política de descarga falla
         window.open(url, '_blank');
       }
     };
@@ -1038,7 +1040,6 @@ window.descargarPDF = function(id) {
   const item = state.historial.find(x => x.id === id);
   if(!item) return;
 
-  // Creamos un HTML oculto que se va a transformar en el PDF
   const tempDiv = document.createElement('div');
   tempDiv.style.padding = '30px';
   tempDiv.style.fontFamily = 'Arial, sans-serif';
@@ -1093,7 +1094,6 @@ window.descargarPDF = function(id) {
     ${fotosHtml}
   `;
 
-  // Opciones de configuración para la librería html2pdf
   const opt = {
     margin:       15,
     filename:     `Reporte_Tanques_${item.nombre_edificio.replace(/\s+/g, '_')}.pdf`,
@@ -1102,7 +1102,6 @@ window.descargarPDF = function(id) {
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
-  // Generar y descargar automáticamente
   html2pdf().set(opt).from(tempDiv).save();
 };
 
@@ -1122,8 +1121,20 @@ function limpiarFormulario() {
 async function handleSubmit(){
   const nombreEdificio = (document.getElementById('f-nombre-edificio').value || '').trim();
   const direccion = (document.getElementById('f-direccion').value || '').trim();
-  const litrosSup = document.getElementById('f-litros-sup').value;
-  const litrosInf = document.getElementById('f-litros-inf').value;
+  
+  // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
+  const rawLitrosSup = document.getElementById('f-litros-sup').value;
+  const rawLitrosInf = document.getElementById('f-litros-inf').value;
+  
+  function parseLitros(val) {
+    if(!val) return null;
+    const num = parseInt(val.replace(/\./g, '').replace(/,/g, ''), 10);
+    return isNaN(num) ? null : num;
+  }
+
+  const litrosSup = parseLitros(rawLitrosSup);
+  const litrosInf = parseLitros(rawLitrosInf);
+
   const observacion = document.getElementById('f-observacion').value.trim();
 
   if(!nombreEdificio || !direccion){
@@ -1137,7 +1148,6 @@ async function handleSubmit(){
   render();
 
   try {
-    // 1. Subir fotos nuevas (si hay)
     const nuevasFotoUrls = [];
     for(const file of state.photoFiles){
       const ext = file.name.split('.').pop() || 'jpg';
@@ -1147,20 +1157,18 @@ async function handleSubmit(){
       nuevasFotoUrls.push(sb.publicUrl('fotos-tanques', path));
     }
 
-    // 2. Unimos fotos viejas y nuevas
     const todasLasFotos = [...state.existingPhotos, ...nuevasFotoUrls];
 
     const payload = {
       direccion: direccion,
       nombre_edificio: nombreEdificio,
-      litros_superior: litrosSup ? Number(litrosSup) : null,
-      litros_inferior: litrosInf ? Number(litrosInf) : null,
+      litros_superior: litrosSup,
+      litros_inferior: litrosInf,
       operario_nombre: state.operarioNombre,
       observacion: observacion || null,
       fotos: todasLasFotos
     };
 
-    // 3. Elegimos si insertar o actualizar dependiendo de si estamos editando
     let errResult;
     if(state.editId) {
       const { error } = await sb.update('limpiezas_tanques', state.editId, payload);
@@ -1172,7 +1180,6 @@ async function handleSubmit(){
 
     if(errResult) throw errResult;
 
-    // 4. Éxito
     state.submitLoading = false;
     state.submitMsg = { ok:true, text: state.editId ? '✓ Registro actualizado correctamente.' : '✓ Registro guardado correctamente.' };
     
@@ -1206,6 +1213,7 @@ init();
 </script>
 </body>
 </html>
+
 
     
 
