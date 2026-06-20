@@ -28,6 +28,11 @@
     color:var(--gris-texto);
     min-height:100vh;
   }
+  
+  /* ESTILOS DEL NUEVO LOGO */
+  .logo-img-top { width:38px; height:38px; object-fit:contain; background:white; border-radius:50%; padding:2px; flex-shrink:0; }
+  .logo-img-auth { width:110px; height:110px; object-fit:contain; margin:0 auto 10px; display:block; }
+
   .topbar{
     background:linear-gradient(135deg,var(--azul-900),var(--azul-700));
     color:white;
@@ -39,10 +44,6 @@
     position:sticky;
     top:0;
     z-index:50;
-  }
-  .topbar .drop{
-    width:34px;height:34px;
-    flex-shrink:0;
   }
   .topbar h1{
     font-size:17px;
@@ -87,7 +88,6 @@
     max-width:380px;
     text-align:center;
   }
-  .auth-card .drop-big{width:64px;height:64px;margin:0 auto 6px;}
   .auth-card h2{
     color:var(--azul-900);
     font-size:20px;
@@ -129,6 +129,9 @@
     outline:none;
     border-color:var(--azul-700);
   }
+  
+  .row-niveles { display:grid; grid-template-columns: 80px 1fr; gap:12px; margin-bottom:12px; }
+
   .btn-primary{
     width:100%;
     background:var(--azul-700);
@@ -219,9 +222,6 @@
     align-items:center;
     gap:8px;
   }
-
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  @media(max-width:480px){.row2{grid-template-columns:1fr;}}
 
   .dir-row{display:flex;gap:8px;align-items:flex-start;}
   .dir-row .field{flex:1;margin-bottom:0;}
@@ -348,7 +348,7 @@
   }
   .historial-item .h-fecha{font-size:11px;color:#8095b5;white-space:nowrap;}
   .historial-item .h-litros{
-    display:flex;gap:16px;margin-top:10px;font-size:13px;
+    display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:13px;
   }
   .historial-item .h-litros b{color:var(--azul-900);}
   .historial-item .h-op{font-size:12px;color:var(--gris-texto);margin-top:6px;}
@@ -513,15 +513,6 @@ const sb = {
   }
 };
 
-const LOGO_DROP_SVG = `
-<svg viewBox="0 0 100 100" class="drop" xmlns="http://www.w3.org/2000/svg">
-  <path d="M50 8 C 50 8, 28 42, 28 60 C 28 75, 38 85, 50 85 C 62 85, 72 75, 72 60 C 72 42, 50 8, 50 8 Z" fill="white"/>
-  <path d="M22 62 C 22 75, 10 78, 5 70" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
-  <path d="M78 62 C 78 75, 90 78, 95 70" stroke="white" stroke-width="6" fill="none" stroke-linecap="round"/>
-</svg>`;
-
-const LOGO_DROP_SVG_BLUE = LOGO_DROP_SVG.replaceAll('white','#1d4ed8').replace('class="drop"','class="drop-big"');
-
 let state = {
   operarioNombre: localStorage_safe_get('tb_operario_nombre'),
   tab: 'nuevo',
@@ -564,7 +555,7 @@ function renderIngreso(){
   return `
     <div class="auth-wrap">
       <div class="auth-card">
-        ${LOGO_DROP_SVG_BLUE}
+        <img src="logo.png" class="logo-img-auth" alt="Tecno Bombas" onerror="this.style.display='none'">
         <h2>TECNO BOMBAS</h2>
         <div class="tagline">SOLUCIONES SUPERIORES</div>
         <div class="intro-text">Ingresá tu nombre para empezar a registrar tanques.</div>
@@ -625,7 +616,7 @@ async function cargarHistorial(){
 function renderApp(){
   return `
     <div class="topbar">
-      ${LOGO_DROP_SVG}
+      <img src="logo.png" class="logo-img-top" alt="Logo" onerror="this.style.display='none'">
       <div>
         <h1>TECNO BOMBAS</h1>
         <div class="sub">SOLUCIONES SUPERIORES</div>
@@ -686,15 +677,26 @@ function renderFormulario(){
 
     <div class="card">
       <h3>💧 Niveles de tanque</h3>
-      <div class="row2">
-        <div class="field">
-          <label>Tanque superior (litros)</label>
-          <!-- CAMBIO: inputmode numeric pero tipo text para que permita puntos/comas sin borrar el número -->
-          <input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Ej: 12000" value="${state.formLitrosSup||''}" />
+      
+      <label style="font-size:12px; font-weight:600; color:var(--azul-900); display:block; margin-bottom:5px;">Tanques Superiores</label>
+      <div class="row-niveles">
+        <div class="field" style="margin-bottom:0;">
+          <input type="number" id="f-cant-sup" placeholder="Cant." min="0" value="${state.formCantSup||''}" />
         </div>
-        <div class="field">
-          <label>Tanque inferior (litros)</label>
-          <input type="text" inputmode="numeric" id="f-litros-inf" placeholder="Ej: 12000" value="${state.formLitrosInf||''}" />
+        <div class="field" style="margin-bottom:0;">
+          <input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Litros (Ej: 12000)" value="${state.formLitrosSup||''}" />
+        </div>
+      </div>
+      
+      <div style="height:14px;"></div>
+      
+      <label style="font-size:12px; font-weight:600; color:var(--azul-900); display:block; margin-bottom:5px;">Tanques Inferiores</label>
+      <div class="row-niveles">
+        <div class="field" style="margin-bottom:0;">
+          <input type="number" id="f-cant-inf" placeholder="Cant." min="0" value="${state.formCantInf||''}" />
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <input type="text" inputmode="numeric" id="f-litros-inf" placeholder="Litros (Ej: 12000)" value="${state.formLitrosInf||''}" />
         </div>
       </div>
     </div>
@@ -702,8 +704,8 @@ function renderFormulario(){
     <div class="card">
       <h3>📝 Detalles</h3>
       <div class="field">
-        <label>Observación</label>
-        <textarea id="f-observacion" rows="3" placeholder="Notas sobre el estado, mantenimiento, etc.">${esc(state.formObservacion||'')}</textarea>
+        <label>Observación (Números de teléfono serán clickeables)</label>
+        <textarea id="f-observacion" rows="3" placeholder="Notas sobre el estado, teléfonos de contacto...">${esc(state.formObservacion||'')}</textarea>
       </div>
       <div class="field">
         <label>Fotos</label>
@@ -769,11 +771,11 @@ function renderHistorial(){
         <div class="h-fecha">${formatFecha(item.created_at)}</div>
       </div>
       <div class="h-litros">
-        <div>Superior: <b>${formatNumber(item.litros_superior)} L</b></div>
-        <div>Inferior: <b>${formatNumber(item.litros_inferior)} L</b></div>
+        <div>Superior: <b>${item.cantidad_superior ? item.cantidad_superior + ' un. de ' : ''}${formatNumber(item.litros_superior)} L</b></div>
+        <div>Inferior: <b>${item.cantidad_inferior ? item.cantidad_inferior + ' un. de ' : ''}${formatNumber(item.litros_inferior)} L</b></div>
       </div>
       ${item.operario_nombre ? `<div class="h-op">👤 ${esc(item.operario_nombre)}</div>` : ''}
-      ${item.observacion ? `<div class="h-obs">"${esc(item.observacion)}"</div>` : ''}
+      ${item.observacion ? `<div class="h-obs">"${formatTelefonos(item.observacion)}"</div>` : ''}
       ${item.fotos && item.fotos.length ? `
         <div class="h-fotos">
           ${item.fotos.map((url, index) => `<img src="${url}" data-id="${item.id}" data-index="${index}" class="galeria-trigger" />`).join('')}
@@ -797,7 +799,6 @@ function formatFecha(iso){
          d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
 }
 
-// NUEVA FUNCIÓN PARA PUNTOS DE MIL
 function formatNumber(num) {
   if (num === null || num === undefined || num === '') return '-';
   return Number(num).toLocaleString('es-AR');
@@ -811,6 +812,13 @@ function esc(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+// NUEVA FUNCIÓN PARA DETECTAR TELÉFONOS
+function formatTelefonos(texto) {
+  if(!texto) return '';
+  const seguro = esc(texto);
+  return seguro.replace(/\b(\d{8,9})\b/g, '<a href="tel:$1" style="color:#1d4ed8; text-decoration:underline; font-weight:bold;">$1</a>');
 }
 
 function attachAppEvents(){
@@ -1012,7 +1020,9 @@ window.editarRegistro = function(id) {
   state.formNombreEdificio = item.nombre_edificio;
   state.formDireccion = item.direccion;
   state.formLitrosSup = item.litros_superior;
+  state.formCantSup = item.cantidad_superior;
   state.formLitrosInf = item.litros_inferior;
+  state.formCantInf = item.cantidad_inferior;
   state.formObservacion = item.observacion;
   state.existingPhotos = item.fotos ? [...item.fotos] : [];
   state.photoFiles = [];
@@ -1023,7 +1033,13 @@ window.editarRegistro = function(id) {
 };
 
 window.eliminarRegistro = async function(id) {
-  if(!confirm('¿Estás seguro que querés eliminar este registro? Esta acción no se puede deshacer.')) return;
+  const clave = prompt("🔒 ACCIÓN PROTEGIDA:\nPor favor, ingresá la contraseña para eliminar este registro:");
+  if (clave !== "1999") {
+    if (clave !== null) alert("❌ Contraseña incorrecta. Acción cancelada.");
+    return;
+  }
+
+  if(!confirm('¿Estás seguro que querés eliminar este registro permanentemente?')) return;
   
   state.loadingHistorial = true;
   render();
@@ -1075,12 +1091,12 @@ window.descargarPDF = function(id) {
 
     <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:14px;">
       <tr>
-        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; width:35%; background:#fafafa;">Tanque Superior</td>
-        <td style="padding:12px; border:1px solid #ccc; width:65%;">${formatNumber(item.litros_superior)} Litros</td>
+        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; width:35%; background:#fafafa;">Tanques Superiores</td>
+        <td style="padding:12px; border:1px solid #ccc; width:65%;">${item.cantidad_superior ? item.cantidad_superior + ' unid. x ' : ''}${formatNumber(item.litros_superior)} Litros</td>
       </tr>
       <tr>
-        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Tanque Inferior</td>
-        <td style="padding:12px; border:1px solid #ccc;">${formatNumber(item.litros_inferior)} Litros</td>
+        <td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Tanques Inferiores</td>
+        <td style="padding:12px; border:1px solid #ccc;">${item.cantidad_inferior ? item.cantidad_inferior + ' unid. x ' : ''}${formatNumber(item.litros_inferior)} Litros</td>
       </tr>
       <tr>
         <td style="padding:12px; border:1px solid #ccc; font-weight:bold; background:#fafafa;">Operario a cargo</td>
@@ -1115,6 +1131,8 @@ function limpiarFormulario() {
   state.formDireccion = '';
   state.formLitrosSup = '';
   state.formLitrosInf = '';
+  state.formCantSup = '';
+  state.formCantInf = '';
   state.formObservacion = '';
   state.submitMsg = null;
   render();
@@ -1124,6 +1142,11 @@ async function handleSubmit(){
   const nombreEdificio = (document.getElementById('f-nombre-edificio').value || '').trim();
   const direccion = (document.getElementById('f-direccion').value || '').trim();
   
+  const rawCantSup = document.getElementById('f-cant-sup').value;
+  const rawCantInf = document.getElementById('f-cant-inf').value;
+  const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null;
+  const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
+
   // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
   const rawLitrosSup = document.getElementById('f-litros-sup').value;
   const rawLitrosInf = document.getElementById('f-litros-inf').value;
@@ -1164,7 +1187,9 @@ async function handleSubmit(){
     const payload = {
       direccion: direccion,
       nombre_edificio: nombreEdificio,
+      cantidad_superior: cantSup,
       litros_superior: litrosSup,
+      cantidad_inferior: cantInf,
       litros_inferior: litrosInf,
       operario_nombre: state.operarioNombre,
       observacion: observacion || null,
@@ -1215,6 +1240,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
