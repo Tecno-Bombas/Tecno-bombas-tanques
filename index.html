@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tecno Bombas · Registro de Tanques</title>
+<!-- Librería para generar el PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{
@@ -688,6 +689,7 @@ function renderFormulario(){
       <div class="row2">
         <div class="field">
           <label>Tanque superior (litros)</label>
+          <!-- CAMBIO: inputmode numeric pero tipo text para que permita puntos/comas sin borrar el número -->
           <input type="text" inputmode="numeric" id="f-litros-sup" placeholder="Ej: 12000" value="${state.formLitrosSup||''}" />
         </div>
         <div class="field">
@@ -804,11 +806,11 @@ function formatNumber(num) {
 function esc(s) {
   if (s === undefined || s === null) return '';
   return String(s)
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, ''');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function attachAppEvents(){
@@ -1213,6 +1215,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
     
