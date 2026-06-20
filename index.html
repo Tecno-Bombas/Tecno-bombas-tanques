@@ -524,6 +524,8 @@ let state = {
   ingresoError: null,
   submitLoading: false,
   submitMsg: null,
+  
+  // VARIABLES DE GALERÍA
   lightboxImages: [],
   lightboxIndex: 0,
 };
@@ -1149,6 +1151,7 @@ async function handleSubmit(){
   const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null;
   const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
 
+  // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
   const rawLitrosSup = document.getElementById('f-litros-sup').value;
   const rawLitrosInf = document.getElementById('f-litros-inf').value;
   
@@ -1241,6 +1244,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
