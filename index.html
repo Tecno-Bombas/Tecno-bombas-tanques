@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tecno Bombas · Registro de Tanques</title>
-<!-- Librería para generar el PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   :root{
@@ -404,14 +403,12 @@
   .lb-close{
     position:absolute;top:20px;right:25px;
     color:white;font-size:40px;cursor:pointer;line-height:1;font-weight:bold;
-    /* Sombra fuerte para que resalte en fondos blancos */
     text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
   }
   .lb-prev, .lb-next{
     position:absolute;top:50%;transform:translateY(-50%);
     color:white;font-size:45px;cursor:pointer;padding:15px;user-select:none;
     font-weight:bold;
-    /* Sombra fuerte (contorno) para que resalte en fondos blancos */
     text-shadow: 0px 2px 10px rgba(0,0,0,0.8), 0px 0px 4px black;
   }
   .lb-prev{left:5px;}
@@ -527,8 +524,6 @@ let state = {
   ingresoError: null,
   submitLoading: false,
   submitMsg: null,
-  
-  // VARIABLES DE GALERÍA
   lightboxImages: [],
   lightboxIndex: 0,
 };
@@ -537,7 +532,7 @@ function localStorage_safe_get(key){
   try { return localStorage.getItem(key) || null; } catch(e){ return null; }
 }
 function localStorage_safe_set(key, val){
-  try { localStorage.setItem(key, val); } catch(e){ /* ignore */ }
+  try { localStorage.setItem(key, val); } catch(e){ }
 }
 
 function render(){
@@ -661,7 +656,7 @@ function renderFormulario(){
       <h3>📍 Ubicación del edificio</h3>
       <div class="field edif-suggestions">
         <label>Nombre del edificio</label>
-        <input type="text" id="f-nombre-edificio" placeholder="Ej: Torre Norte, Consorcio Belgrano..." autocomplete="off" value="${esc(state.formNombreEdificio||'')}" />
+        <input type="text" id="f-nombre-edificio" placeholder="Ej: Torre Norte..." autocomplete="off" value="${esc(state.formNombreEdificio||'')}" />
         <div id="suggestions-container">
           ${state.edifSuggestOpen ? renderSuggestions() : ''}
         </div>
@@ -739,6 +734,7 @@ function renderSuggestions(){
   </div>`;
 }
 
+// NUEVO RENDER DEL HISTORIAL (OPTIMIZADO PARA BUSCADOR CSS)
 function renderHistorial(){
   let html = `
     <div class="search-box">
@@ -751,18 +747,20 @@ function renderHistorial(){
     return html + `<div class="loading">Cargando historial...</div>`;
   }
 
-  let filtrados = state.historial;
-  if(state.searchQuery){
-    const q = state.searchQuery.toLowerCase();
-    filtrados = filtrados.filter(x => x.nombre_edificio && x.nombre_edificio.toLowerCase().includes(q));
+  if(state.historial.length === 0) {
+    return html + `<div class="card"><div class="empty-state">No hay registros todavía.</div></div>`;
   }
 
-  if(filtrados.length === 0) {
-    return html + `<div class="card"><div class="empty-state">No se encontraron registros.</div></div>`;
-  }
+  const query = (state.searchQuery || '').toLowerCase();
+  let visibles = 0;
 
-  html += filtrados.map(item => `
-    <div class="historial-item">
+  let itemsHtml = state.historial.map(item => {
+    const nombreBusqueda = (item.nombre_edificio || '').toLowerCase();
+    const match = !query || nombreBusqueda.includes(query);
+    if(match) visibles++;
+    
+    return `
+    <div class="historial-item" data-search="${esc(nombreBusqueda)}" style="display:${match ? 'block' : 'none'}">
       <div class="h-top">
         <div>
           <div class="h-edif">${esc(item.nombre_edificio)}</div>
@@ -787,8 +785,13 @@ function renderHistorial(){
         <button class="btn-delete" onclick="window.eliminarRegistro('${item.id}')">🗑️ Eliminar</button>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
+  html += `<div id="empty-search" class="card" style="display:${visibles === 0 ? 'block' : 'none'}">
+             <div class="empty-state">No se encontraron registros para esa búsqueda.</div>
+           </div>`;
+           
+  html += itemsHtml;
   return html;
 }
 
@@ -806,15 +809,9 @@ function formatNumber(num) {
 
 function esc(s) {
   if (s === undefined || s === null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, ''');
 }
 
-// NUEVA FUNCIÓN PARA DETECTAR TELÉFONOS
 function formatTelefonos(texto) {
   if(!texto) return '';
   const seguro = esc(texto);
@@ -839,13 +836,28 @@ function attachAppEvents(){
     attachFormEvents();
   }
 
+  // BUSCADOR OPTIMIZADO (Sin recargar la página)
   if(state.tab === 'historial'){
     const buscador = document.getElementById('h-buscador');
-    buscador.oninput = (e) => {
-      state.searchQuery = e.target.value;
-      render(); 
-      setTimeout(() => { document.getElementById('h-buscador').focus(); }, 0);
-    };
+    if(buscador) {
+      buscador.oninput = (e) => {
+        state.searchQuery = e.target.value;
+        const queryBusqueda = state.searchQuery.toLowerCase();
+        let visibles = 0;
+        
+        document.querySelectorAll('.historial-item').forEach(el => {
+          if (el.getAttribute('data-search').includes(queryBusqueda)) {
+            el.style.display = 'block';
+            visibles++;
+          } else {
+            el.style.display = 'none';
+          }
+        });
+        
+        const emptyMsg = document.getElementById('empty-search');
+        if(emptyMsg) emptyMsg.style.display = visibles === 0 ? 'block' : 'none';
+      };
+    }
   }
 
   document.querySelectorAll('.h-dir').forEach(el => {
@@ -855,7 +867,6 @@ function attachAppEvents(){
     };
   });
 
-  // Eventos para abrir la galería
   document.querySelectorAll('.galeria-trigger').forEach(img => {
     img.onclick = () => { 
       const id = img.getAttribute('data-id');
@@ -867,15 +878,11 @@ function attachAppEvents(){
     };
   });
 
-  // Eventos del Lightbox (Galería)
   if(state.lightboxImages.length > 0){
     document.getElementById('lb-close').onclick = () => { state.lightboxImages = []; render(); };
-    
-    // Cerrar tocando afuera de la imagen
     document.getElementById('lightbox').onclick = (e) => {
       if(e.target.id === 'lightbox') { state.lightboxImages = []; render(); }
     };
-
     if(document.getElementById('lb-prev')){
       document.getElementById('lb-prev').onclick = (e) => {
         e.stopPropagation();
@@ -883,7 +890,6 @@ function attachAppEvents(){
         render();
       };
     }
-
     if(document.getElementById('lb-next')){
       document.getElementById('lb-next').onclick = (e) => {
         e.stopPropagation();
@@ -891,7 +897,6 @@ function attachAppEvents(){
         render();
       };
     }
-
     document.getElementById('lb-download').onclick = async (e) => {
       e.stopPropagation();
       const url = state.lightboxImages[state.lightboxIndex];
@@ -982,7 +987,6 @@ function renderPhotoPreviews(){
   const cont = document.getElementById('photo-previews');
   if(!cont) return;
   
-  // Muestra fotos viejas que ya existían
   let html = state.existingPhotos.map((url, i) => `
     <div class="photo-thumb">
       <img src="${url}" />
@@ -990,7 +994,6 @@ function renderPhotoPreviews(){
     </div>
   `).join('');
 
-  // Muestra fotos nuevas a subir
   html += state.photoFiles.map((f, i) => `
     <div class="photo-thumb" style="border-color:#1f8a4c;">
       <img src="${URL.createObjectURL(f)}" />
@@ -1001,7 +1004,6 @@ function renderPhotoPreviews(){
   cont.innerHTML = html;
 }
 
-// LÓGICA DE EDICIÓN, BORRADO Y DESCARGA
 window.quitarFotoExistente = function(index) {
   state.existingPhotos.splice(index, 1);
   renderPhotoPreviews();
@@ -1147,7 +1149,6 @@ async function handleSubmit(){
   const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null;
   const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
 
-  // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
   const rawLitrosSup = document.getElementById('f-litros-sup').value;
   const rawLitrosInf = document.getElementById('f-litros-inf').value;
   
@@ -1240,6 +1241,7 @@ init();
 </script>
 </body>
 </html>
+
 
 
 
