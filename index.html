@@ -754,18 +754,20 @@ function renderHistorial(){
     return html + `<div class="loading">Cargando historial...</div>`;
   }
 
-  let filtrados = state.historial;
-  if(state.searchQuery){
-    const q = state.searchQuery.toLowerCase();
-    filtrados = filtrados.filter(x => x.nombre_edificio && x.nombre_edificio.toLowerCase().includes(q));
-  }
-
-  if(filtrados.length === 0) {
+  if(state.historial.length === 0) {
     return html + `<div class="card"><div class="empty-state">No se encontraron registros.</div></div>`;
   }
 
-  html += filtrados.map(item => `
-    <div class="historial-item">
+  const query = (state.searchQuery || '').toLowerCase();
+  let visibles = 0;
+
+  let itemsHtml = state.historial.map(item => {
+    const nombreBusqueda = (item.nombre_edificio || '').toLowerCase();
+    const match = !query || nombreBusqueda.includes(query);
+    if(match) visibles++;
+
+    return `
+    <div class="historial-item" data-search="${esc(nombreBusqueda)}" style="display:${match ? 'block' : 'none'}">
       <div class="h-top">
         <div>
           <div class="h-edif">${esc(item.nombre_edificio)}</div>
@@ -790,8 +792,14 @@ function renderHistorial(){
         <button class="btn-delete" onclick="window.eliminarRegistro('${item.id}')">🗑️ Eliminar</button>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 
+  html += `<div id="empty-search" class="card" style="display:${visibles === 0 ? 'block' : 'none'}">
+             <div class="empty-state">No se encontraron registros para esa búsqueda.</div>
+           </div>`;
+
+  html += itemsHtml;
   return html;
 }
 
@@ -802,7 +810,6 @@ function formatFecha(iso){
          d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
 }
 
-// NUEVA FUNCIÓN PARA PUNTOS DE MIL
 function formatNumber(num) {
   if (num === null || num === undefined || num === '') return '-';
   return Number(num).toLocaleString('es-AR');
@@ -836,13 +843,28 @@ function attachAppEvents(){
     attachFormEvents();
   }
 
+  // OPTIMIZACIÓN DEL BUSCADOR
   if(state.tab === 'historial'){
     const buscador = document.getElementById('h-buscador');
-    buscador.oninput = (e) => {
-      state.searchQuery = e.target.value;
-      render(); 
-      setTimeout(() => { document.getElementById('h-buscador').focus(); }, 0);
-    };
+    if (buscador) {
+      buscador.oninput = (e) => {
+        state.searchQuery = e.target.value;
+        const queryBusqueda = state.searchQuery.toLowerCase();
+        let visibles = 0;
+        
+        document.querySelectorAll('.historial-item').forEach(el => {
+          if (el.getAttribute('data-search').includes(queryBusqueda)) {
+            el.style.display = 'block';
+            visibles++;
+          } else {
+            el.style.display = 'none';
+          }
+        });
+        
+        const emptyMsg = document.getElementById('empty-search');
+        if(emptyMsg) emptyMsg.style.display = visibles === 0 ? 'block' : 'none';
+      };
+    }
   }
 
   document.querySelectorAll('.h-dir').forEach(el => {
@@ -852,7 +874,6 @@ function attachAppEvents(){
     };
   });
 
-  // Eventos para abrir la galería
   document.querySelectorAll('.galeria-trigger').forEach(img => {
     img.onclick = () => { 
       const id = img.getAttribute('data-id');
@@ -864,11 +885,9 @@ function attachAppEvents(){
     };
   });
 
-  // Eventos del Lightbox (Galería)
   if(state.lightboxImages.length > 0){
     document.getElementById('lb-close').onclick = () => { state.lightboxImages = []; render(); };
     
-    // Cerrar tocando afuera de la imagen
     document.getElementById('lightbox').onclick = (e) => {
       if(e.target.id === 'lightbox') { state.lightboxImages = []; render(); }
     };
@@ -979,7 +998,6 @@ function renderPhotoPreviews(){
   const cont = document.getElementById('photo-previews');
   if(!cont) return;
   
-  // Muestra fotos viejas que ya existían
   let html = state.existingPhotos.map((url, i) => `
     <div class="photo-thumb">
       <img src="${url}" />
@@ -987,7 +1005,6 @@ function renderPhotoPreviews(){
     </div>
   `).join('');
 
-  // Muestra fotos nuevas a subir
   html += state.photoFiles.map((f, i) => `
     <div class="photo-thumb" style="border-color:#1f8a4c;">
       <img src="${URL.createObjectURL(f)}" />
@@ -998,7 +1015,6 @@ function renderPhotoPreviews(){
   cont.innerHTML = html;
 }
 
-// LÓGICA DE EDICIÓN, BORRADO Y DESCARGA
 window.quitarFotoExistente = function(index) {
   state.existingPhotos.splice(index, 1);
   renderPhotoPreviews();
@@ -1144,7 +1160,6 @@ async function handleSubmit(){
   const cantSup = rawCantSup ? parseInt(rawCantSup, 10) : null;
   const cantInf = rawCantInf ? parseInt(rawCantInf, 10) : null;
 
-  // LEER LOS LITROS COMO TEXTO Y LIMPIAR PUNTOS Y COMAS ANTES DE GUARDAR
   const rawLitrosSup = document.getElementById('f-litros-sup').value;
   const rawLitrosInf = document.getElementById('f-litros-inf').value;
   
