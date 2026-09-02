@@ -60,18 +60,22 @@ function mostrarSeccion(s){
   document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
 
-  document.getElementById(s).classList.add("active");
+  const section=document.getElementById(s);
+  if(section) section.classList.add("active");
 
-  document
-    .getElementById(
-      s==="movimientos" ? "tabMovimientos" : "tabPendientes"
-    )
-    .classList.add("active");
+  const tabId=
+    s==="movimientos"
+      ? "tabMovimientos"
+      : s==="pendientes"
+        ? "tabPendientes"
+        : "tabRecompensas";
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+  const tab=document.getElementById(tabId);
+  if(tab) tab.classList.add("active");
+
+  if(s==="recompensas") mostrarRecompensas();
+
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 
