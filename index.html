@@ -1,775 +1,1139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gastos Facu & Jaz</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff8fba">
+<title>Gastos Facu & Jaz</title>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+:root{
+  --primary:#6c63ff;
+  --primary2:#8b83ff;
+  --bg:#f5f6ff;
+  --card:#ffffff;
+  --text:#202338;
+  --muted:#777b91;
+  --border:#e8e9f3;
+  --danger:#ff5c70;
+  --shadow:0 12px 35px rgba(40,45,90,.10);
+  --radius:24px;
+}
 
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f4f4f5;
-            padding: 15px;
-            max-width: 600px;
-            margin: auto;
-            color: #18181b;
-        }
+/* =========================
+   TEMAS
+========================= */
 
-        h1 {
-            text-align: center;
-            margin: 10px 0 20px;
-        }
+body.theme-blue{
+  --primary:#4f7cff;
+  --primary2:#6f95ff;
+  --bg:#f2f6ff;
+}
 
-        h2 {
-            margin-top: 0;
-            font-size: 1.15rem;
-        }
+body.theme-pink{
+  --primary:#ff6fae;
+  --primary2:#ff91c2;
+  --bg:#fff3f8;
+}
 
-        .card {
-            background: white;
-            padding: 18px;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.08);
-            margin-bottom: 15px;
-        }
+body.theme-purple{
+  --primary:#8b5cf6;
+  --primary2:#a78bfa;
+  --bg:#f6f2ff;
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+body.theme-green{
+  --primary:#31a879;
+  --primary2:#59c99c;
+  --bg:#effbf6;
+}
 
-        .grid3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
+body.theme-orange{
+  --primary:#f59e0b;
+  --primary2:#fbbf24;
+  --bg:#fff8eb;
+}
 
-        .stat {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 13px 7px;
-            text-align: center;
-        }
+body.theme-dark{
+  --primary:#8b8cff;
+  --primary2:#aaaaff;
+  --bg:#11131d;
+  --card:#1b1e2b;
+  --text:#f4f4f7;
+  --muted:#a6a8b8;
+  --border:#2d3040;
+  --shadow:0 15px 40px rgba(0,0,0,.35);
+}
 
-        .stat small {
-            display: block;
-            color: #64748b;
-            margin-bottom: 5px;
-        }
+/* KAWAII */
+body.theme-kawaii{
+  --primary:#ff82b4;
+  --primary2:#ffa6ca;
+  --bg:#fff3f8;
+  --card:#ffffff;
+  --text:#4a3440;
+  --muted:#987b89;
+  --border:#ffd8e7;
+  --shadow:0 12px 35px rgba(255,130,180,.15);
+}
 
-        .number {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+*{
+  box-sizing:border-box;
+}
 
-        .facu {
-            color: #2563eb;
-        }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,255,255,.8),transparent 25%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  transition:.3s;
+}
 
-        .jaz {
-            color: #db2777;
-        }
+button,input,select{
+  font:inherit;
+}
 
-        .green {
-            color: #047857;
-        }
+button{
+  cursor:pointer;
+}
 
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
+/* =========================
+   APP
+========================= */
 
-        input,
-        select {
-            border: 1px solid #cbd5e1;
-            background: white;
-        }
+.app{
+  max-width:600px;
+  margin:auto;
+  padding:18px 16px 100px;
+}
 
-        button {
-            border: none;
-            background: #2563eb;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
+/* HEADER */
 
-        button:active {
-            transform: scale(.99);
-        }
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
 
-        .gasto {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            padding: 13px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 
-        .gasto:last-child {
-            border-bottom: none;
-        }
+.logo{
+  width:50px;
+  height:50px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,.10);
+}
 
-        .info {
-            flex: 1;
-        }
+.brand h1{
+  margin:0;
+  font-size:21px;
+  font-weight:800;
+}
 
-        .info strong {
-            display: block;
-        }
+.brand small{
+  color:var(--muted);
+}
 
-        .info small {
-            color: #64748b;
-        }
+.settings{
+  width:45px;
+  height:45px;
+  border:0;
+  border-radius:50%;
+  background:var(--card);
+  box-shadow:var(--shadow);
+  font-size:20px;
+}
 
-        .monto {
-            text-align: right;
-            font-weight: bold;
-            white-space: nowrap;
-        }
+/* KAWAII DECORATION */
 
-        .borrar {
-            background: #fee2e2;
-            color: #b91c1c;
-            width: auto;
-            padding: 6px 8px;
-            margin: 5px 0 0;
-            font-size: .8rem;
-        }
+.kawaii-decoration{
+  display:none;
+}
 
-        .mensaje {
-            text-align: center;
-            color: #64748b;
-            padding: 15px 0;
-        }
+.theme-kawaii .kawaii-decoration{
+  display:flex;
+  justify-content:space-between;
+  padding:0 8px 4px;
+  font-size:22px;
+}
 
-        .estado {
-            text-align: center;
-            font-size: .85rem;
-            color: #64748b;
-            margin-top: 5px;
-        }
+/* BALANCE */
 
-        hr {
-            border: 0;
-            border-top: 1px solid #e2e8f0;
-            margin: 18px 0;
-        }
-    </style>
+.balance{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+  border-radius:30px;
+  padding:25px;
+  box-shadow:0 18px 35px rgba(80,80,180,.20);
+  margin-bottom:18px;
+}
+
+.balance:after{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  right:-55px;
+  top:-50px;
+}
+
+.balance-label{
+  opacity:.85;
+  font-size:14px;
+}
+
+.balance-amount{
+  font-size:38px;
+  font-weight:900;
+  margin:5px 0 8px;
+  letter-spacing:-1px;
+}
+
+.balance-info{
+  display:flex;
+  gap:18px;
+  font-size:12px;
+  opacity:.9;
+}
+
+/* SUMMARY */
+
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:25px 3px 10px;
+}
+
+.section-title h2{
+  font-size:17px;
+  margin:0;
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.summary-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.summary-icon{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  background:color-mix(in srgb,var(--primary) 13%,transparent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  margin-bottom:8px;
+}
+
+.summary-name{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.summary-value{
+  font-size:20px;
+  font-weight:800;
+  margin-top:3px;
+}
+
+/* FORM */
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+
+.field{
+  margin-bottom:15px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+input,select{
+  width:100%;
+  border:1.5px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:16px;
+  padding:14px;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,select:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 12%,transparent);
+}
+
+.add-btn{
+  width:100%;
+  border:0;
+  border-radius:18px;
+  padding:15px;
+  color:white;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  box-shadow:0 10px 22px color-mix(in srgb,var(--primary) 25%,transparent);
+  transition:.2s;
+}
+
+.add-btn:active{
+  transform:scale(.98);
+}
+
+/* HISTORY */
+
+.history-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.history-item:last-child{
+  border-bottom:0;
+}
+
+.history-icon{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  background:color-mix(in srgb,var(--primary) 12%,transparent);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:20px;
+  flex-shrink:0;
+}
+
+.history-info{
+  flex:1;
+  min-width:0;
+}
+
+.history-concept{
+  font-weight:750;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.history-meta{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.history-amount{
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.delete-btn{
+  border:0;
+  background:transparent;
+  color:var(--danger);
+  font-size:18px;
+  padding:5px;
+}
+
+/* SETTINGS PANEL */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  display:none;
+  z-index:20;
+}
+
+.overlay.show{
+  display:block;
+}
+
+.settings-panel{
+  position:fixed;
+  z-index:30;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%) translateY(100%);
+  width:min(600px,100%);
+  background:var(--card);
+  border-radius:30px 30px 0 0;
+  padding:22px;
+  box-shadow:0 -15px 40px rgba(0,0,0,.18);
+  transition:.3s;
+}
+
+.settings-panel.show{
+  transform:translateX(-50%) translateY(0);
+}
+
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.panel-header h2{
+  margin:0;
+  font-size:20px;
+}
+
+.close-btn{
+  border:0;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.themes{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.theme-btn{
+  border:2px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  border-radius:18px;
+  padding:13px 8px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.theme-btn.active{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 12%,transparent);
+}
+
+.theme-preview{
+  height:30px;
+  border-radius:12px;
+  margin-bottom:7px;
+}
+
+/* KAWAII */
+
+.kawaii-note{
+  display:none;
+}
+
+.theme-kawaii .kawaii-note{
+  display:block;
+  text-align:center;
+  margin-top:15px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:25px 10px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* STATUS */
+
+.status{
+  text-align:center;
+  margin-top:18px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  background:#40c98a;
+  border-radius:50%;
+  margin-right:5px;
+}
+
+/* KAWAII OVERRIDES */
+
+.theme-kawaii .card,
+.theme-kawaii .summary-card{
+  border-radius:28px;
+}
+
+.theme-kawaii .add-btn{
+  border-radius:25px;
+}
+
+.theme-kawaii .settings{
+  border-radius:18px;
+}
+
+.theme-kawaii .history-icon{
+  border-radius:18px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:380px){
+  .summary-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .balance-amount{
+    font-size:33px;
+  }
+}
+</style>
 </head>
 
-<body>
+<body class="theme-blue">
 
-<h1>💰 Gastos Facu & Jaz</h1>
+<div class="app">
 
-<!-- FONDO -->
-<div class="card">
-
-    <h2>💵 Fondo común</h2>
-
-    <div class="grid">
-
-        <div class="stat">
-            <small>Dinero agregado</small>
-            <div id="ingreso" class="number">$0</div>
-        </div>
-
-        <div class="stat">
-            <small>Disponible</small>
-            <div id="disponible" class="number green">$0</div>
-        </div>
-
+  <div class="header">
+    <div class="brand">
+      <div class="logo" id="logo">💰</div>
+      <div>
+        <h1>Facu & Jaz</h1>
+        <small>Gastos en pareja</small>
+      </div>
     </div>
 
-    <br>
+    <button class="settings" onclick="openSettings()">⚙️</button>
+  </div>
 
-    <input
-        type="number"
-        id="montoFondo"
-        placeholder="¿Cuánto agregamos?"
-        min="0"
-    >
+  <div class="kawaii-decoration">
+    <span>🐱</span>
+    <span>💕</span>
+    <span>🐾</span>
+    <span>💗</span>
+    <span>🐱</span>
+  </div>
 
-    <button onclick="agregarFondo()">
-        ➕ Agregar al fondo
+  <!-- BALANCE -->
+
+  <div class="balance">
+    <div class="balance-label">💰 Dinero disponible</div>
+    <div class="balance-amount" id="disponible">$0</div>
+
+    <div class="balance-info">
+      <span>Ingresado: <b id="totalIngresado">$0</b></span>
+      <span>Gastado: <b id="totalGastado">$0</b></span>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+
+  <div class="section-title">
+    <h2>Resumen</h2>
+  </div>
+
+  <div class="summary-grid">
+
+    <div class="summary-card">
+      <div class="summary-icon">👨</div>
+      <div class="summary-name">Facu pagó</div>
+      <div class="summary-value" id="facuTotal">$0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">👩</div>
+      <div class="summary-name">Jaz pagó</div>
+      <div class="summary-value" id="jazTotal">$0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">🤝</div>
+      <div class="summary-name">A medias</div>
+      <div class="summary-value" id="mitadTotal">$0</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">🧾</div>
+      <div class="summary-name">Total gastos</div>
+      <div class="summary-value" id="gastosCount">0</div>
+    </div>
+
+  </div>
+
+  <!-- NUEVO GASTO -->
+
+  <div class="section-title">
+    <h2>➕ Nuevo gasto</h2>
+  </div>
+
+  <div class="card">
+
+    <div class="field">
+      <label>¿Qué compraron?</label>
+      <input id="concepto" type="text" placeholder="Ej: Supermercado">
+    </div>
+
+    <div class="field">
+      <label>💵 Monto</label>
+      <input id="monto" type="number" min="1" step="0.01" placeholder="Ej: 2500">
+    </div>
+
+    <div class="field">
+      <label>👤 ¿Quién pagó?</label>
+
+      <select id="persona">
+        <option value="Facu">👨 Facu</option>
+        <option value="Jaz">👩 Jaz</option>
+        <option value="A medias">🤝 A medias</option>
+      </select>
+    </div>
+
+    <button class="add-btn" onclick="agregarGasto()">
+      💕 Agregar gasto
     </button>
 
-</div>
+  </div>
 
+  <!-- INGRESO -->
 
-<!-- RESUMEN -->
-<div class="card">
+  <div class="section-title">
+    <h2>💰 Fondo común</h2>
+  </div>
 
-    <h2>📊 Resumen</h2>
+  <div class="card">
 
-    <div class="grid3">
-
-        <div class="stat">
-            <small>Facu</small>
-            <div id="facu" class="number facu">$0</div>
-        </div>
-
-        <div class="stat">
-            <small>Jaz</small>
-            <div id="jaz" class="number jaz">$0</div>
-        </div>
-
-        <div class="stat">
-            <small>A medias</small>
-            <div id="medias" class="number">$0</div>
-        </div>
-
+    <div class="field">
+      <label>Agregar dinero al fondo</label>
+      <input id="ingresoMonto" type="number" min="1" step="0.01" placeholder="Ej: 20000">
     </div>
 
-    <hr>
-
-    <div class="stat">
-        <small>Total gastado</small>
-        <div id="total" class="number">$0</div>
-    </div>
-
-</div>
-
-
-<!-- NUEVO GASTO -->
-<div class="card">
-
-    <h2>🧾 Registrar gasto</h2>
-
-    <input
-        type="text"
-        id="concepto"
-        placeholder="Ej. Supermercado"
-    >
-
-    <input
-        type="number"
-        id="monto"
-        placeholder="Monto ($)"
-        min="0"
-    >
-
-    <select id="persona">
-
-        <option value="Facu">
-            👨 Facu pagó
-        </option>
-
-        <option value="Jaz">
-            👩 Jaz pagó
-        </option>
-
-        <option value="A medias">
-            🤝 Lo pagamos a medias
-        </option>
-
-    </select>
-
-    <button onclick="agregarGasto()">
-        ➕ Agregar gasto
+    <button class="add-btn" onclick="agregarIngreso()">
+      💰 Agregar dinero
     </button>
 
-</div>
+  </div>
 
+  <!-- HISTORIAL -->
 
-<!-- HISTORIAL -->
-<div class="card">
+  <div class="section-title">
+    <h2>🧾 Historial</h2>
+  </div>
 
-    <h2>📋 Historial</h2>
-
+  <div class="card">
     <div id="historial">
-        <div class="mensaje">
-            Cargando...
-        </div>
+      <div class="empty">Cargando gastos...</div>
     </div>
+  </div>
 
-    <div id="estado" class="estado">
-        Conectando...
-    </div>
+  <div class="status">
+    <span class="dot"></span>
+    Datos sincronizados
+  </div>
 
 </div>
 
+<!-- OVERLAY -->
+
+<div class="overlay" id="overlay" onclick="closeSettings()"></div>
+
+<!-- SETTINGS -->
+
+<div class="settings-panel" id="settingsPanel">
+
+  <div class="panel-header">
+    <h2>🎨 Personalizá tu app</h2>
+
+    <button class="close-btn" onclick="closeSettings()">✕</button>
+  </div>
+
+  <div class="themes">
+
+    <button class="theme-btn" data-theme="blue" onclick="setTheme('blue')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#4f7cff,#6f95ff)"></div>
+      💙 Azul
+    </button>
+
+    <button class="theme-btn" data-theme="pink" onclick="setTheme('pink')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#ff6fae,#ff91c2)"></div>
+      🩷 Rosa
+    </button>
+
+    <button class="theme-btn" data-theme="purple" onclick="setTheme('purple')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)"></div>
+      💜 Violeta
+    </button>
+
+    <button class="theme-btn" data-theme="green" onclick="setTheme('green')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#31a879,#59c99c)"></div>
+      💚 Verde
+    </button>
+
+    <button class="theme-btn" data-theme="orange" onclick="setTheme('orange')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)"></div>
+      🧡 Naranja
+    </button>
+
+    <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#292b42,#11131d)"></div>
+      🖤 Oscuro
+    </button>
+
+    <button class="theme-btn" data-theme="kawaii" onclick="setTheme('kawaii')">
+      <div class="theme-preview" style="background:linear-gradient(135deg,#ff82b4,#ffc2dc)"></div>
+      🎀 Kawaii
+    </button>
+
+  </div>
+
+  <div class="kawaii-note">
+    🐱💕 Miau! Elegiste el modo más tierno 💕🐱
+  </div>
+
+</div>
 
 <script>
 
-    // ==========================================
-    // CONFIGURACIÓN SUPABASE
-    // ==========================================
+/* =====================================
+   SUPABASE
+===================================== */
 
-    const SUPABASE_URL =
-        "https://ofejunrkrjybfvbqmzzh.supabase.co";
+const SUPABASE_URL =
+  "https://ofejunrkrjybfvbqmzzh.supabase.co";
 
-    const SUPABASE_KEY =
-        "sb_publishable_HU_bsdvSPB24bPM0yIxRCg_6be0Btn3";
+/*
+  PEGÁ ACÁ TU MISMA PUBLISHABLE KEY
+  QUE YA TENÉS EN TU INDEX.HTML ACTUAL.
+*/
+const SUPABASE_KEY =
+  "sb_publishable_HU_bsdvSPB24bPM0yIxRCg_6be0Btn3";
 
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-    const db = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+/* =====================================
+   DATOS
+===================================== */
 
+let datos = [];
 
-    // ==========================================
-    // FORMATO DE DINERO
-    // ==========================================
+/* =====================================
+   FORMATO DINERO
+===================================== */
 
-    function dinero(numero) {
+function dinero(valor){
+  return "$" + Number(valor || 0).toLocaleString("es-UY",{
+    minimumFractionDigits:0,
+    maximumFractionDigits:2
+  });
+}
 
-        return "$" + numero.toLocaleString(
-            "es-UY",
-            {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }
-        );
+/* =====================================
+   CARGAR DATOS
+===================================== */
 
+async function cargarDatos(){
+
+  const {data,error} = await db
+    .from("gastos_pareja")
+    .select("*")
+    .order("fecha",{ascending:false});
+
+  if(error){
+
+    console.error(error);
+
+    document.getElementById("historial").innerHTML =
+      `<div class="empty">
+        ⚠️ No se pudieron cargar los datos.
+      </div>`;
+
+    return;
+  }
+
+  datos = data || [];
+
+  actualizarPantalla();
+}
+
+/* =====================================
+   ACTUALIZAR
+===================================== */
+
+function actualizarPantalla(){
+
+  const ingresos = datos
+    .filter(x => x.tipo === "ingreso")
+    .reduce((s,x)=>s+Number(x.monto),0);
+
+  const gastos = datos
+    .filter(x => x.tipo === "gasto")
+    .reduce((s,x)=>s+Number(x.monto),0);
+
+  const facu = datos
+    .filter(x => x.tipo === "gasto" && x.persona === "Facu")
+    .reduce((s,x)=>s+Number(x.monto),0);
+
+  const jaz = datos
+    .filter(x => x.tipo === "gasto" && x.persona === "Jaz")
+    .reduce((s,x)=>s+Number(x.monto),0);
+
+  const medias = datos
+    .filter(x => x.tipo === "gasto" && x.persona === "A medias")
+    .reduce((s,x)=>s+Number(x.monto),0);
+
+  document.getElementById("disponible").textContent =
+    dinero(ingresos-gastos);
+
+  document.getElementById("totalIngresado").textContent =
+    dinero(ingresos);
+
+  document.getElementById("totalGastado").textContent =
+    dinero(gastos);
+
+  document.getElementById("facuTotal").textContent =
+    dinero(facu);
+
+  document.getElementById("jazTotal").textContent =
+    dinero(jaz);
+
+  document.getElementById("mitadTotal").textContent =
+    dinero(medias);
+
+  document.getElementById("gastosCount").textContent =
+    datos.filter(x=>x.tipo==="gasto").length;
+
+  mostrarHistorial();
+}
+
+/* =====================================
+   HISTORIAL
+===================================== */
+
+function mostrarHistorial(){
+
+  const gastos = datos.filter(x=>x.tipo==="gasto");
+
+  if(!gastos.length){
+
+    document.getElementById("historial").innerHTML =
+      `<div class="empty">
+        🐾 Todavía no hay gastos registrados.
+      </div>`;
+
+    return;
+  }
+
+  document.getElementById("historial").innerHTML =
+    gastos.map(g=>{
+
+      let icono = "🧾";
+
+      if(g.persona === "Facu") icono = "👨";
+      if(g.persona === "Jaz") icono = "👩";
+      if(g.persona === "A medias") icono = "🤝";
+
+      const fecha = new Date(g.fecha);
+
+      return `
+        <div class="history-item">
+
+          <div class="history-icon">
+            ${icono}
+          </div>
+
+          <div class="history-info">
+
+            <div class="history-concept">
+              ${escapeHTML(g.concepto)}
+            </div>
+
+            <div class="history-meta">
+              ${g.persona} · ${fecha.toLocaleDateString("es-UY")}
+            </div>
+
+          </div>
+
+          <div class="history-amount">
+            ${dinero(g.monto)}
+          </div>
+
+          <button
+            class="delete-btn"
+            onclick="eliminarGasto('${g.id}')">
+            🗑️
+          </button>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+/* =====================================
+   AGREGAR GASTO
+===================================== */
+
+async function agregarGasto(){
+
+  const concepto =
+    document.getElementById("concepto").value.trim();
+
+  const monto =
+    Number(document.getElementById("monto").value);
+
+  const persona =
+    document.getElementById("persona").value;
+
+  if(!concepto){
+
+    alert("Escribí qué compraron 💕");
+    return;
+  }
+
+  if(!monto || monto <= 0){
+
+    alert("Ingresá un monto válido 💰");
+    return;
+  }
+
+  const {error} = await db
+    .from("gastos_pareja")
+    .insert({
+      tipo:"gasto",
+      concepto:concepto,
+      monto:monto,
+      persona:persona
+    });
+
+  if(error){
+
+    console.error(error);
+    alert("No se pudo guardar el gasto.");
+
+    return;
+  }
+
+  document.getElementById("concepto").value = "";
+  document.getElementById("monto").value = "";
+
+  cargarDatos();
+}
+
+/* =====================================
+   AGREGAR INGRESO
+===================================== */
+
+async function agregarIngreso(){
+
+  const monto =
+    Number(document.getElementById("ingresoMonto").value);
+
+  if(!monto || monto <= 0){
+
+    alert("Ingresá un monto válido 💰");
+    return;
+  }
+
+  const {error} = await db
+    .from("gastos_pareja")
+    .insert({
+      tipo:"ingreso",
+      concepto:"Fondo común",
+      monto:monto,
+      persona:null
+    });
+
+  if(error){
+
+    console.error(error);
+    alert("No se pudo agregar el dinero.");
+
+    return;
+  }
+
+  document.getElementById("ingresoMonto").value = "";
+
+  cargarDatos();
+}
+
+/* =====================================
+   ELIMINAR
+===================================== */
+
+async function eliminarGasto(id){
+
+  const confirmar =
+    confirm("¿Querés eliminar este registro?");
+
+  if(!confirmar) return;
+
+  const {error} = await db
+    .from("gastos_pareja")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+
+    console.error(error);
+    alert("No se pudo eliminar.");
+
+    return;
+  }
+
+  cargarDatos();
+}
+
+/* =====================================
+   SEGURIDAD HTML
+===================================== */
+
+function escapeHTML(text){
+
+  return String(text || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* =====================================
+   TEMAS
+===================================== */
+
+function setTheme(theme){
+
+  document.body.className =
+    "theme-" + theme;
+
+  localStorage.setItem(
+    "facu-jaz-theme",
+    theme
+  );
+
+  document.querySelectorAll(".theme-btn")
+    .forEach(btn=>{
+
+      btn.classList.toggle(
+        "active",
+        btn.dataset.theme === theme
+      );
+
+    });
+
+  const logo =
+    document.getElementById("logo");
+
+  if(theme === "kawaii"){
+    logo.textContent = "🐱";
+  }else{
+    logo.textContent = "💰";
+  }
+}
+
+function cargarTema(){
+
+  const theme =
+    localStorage.getItem("facu-jaz-theme")
+    || "blue";
+
+  setTheme(theme);
+}
+
+/* =====================================
+   PANEL
+===================================== */
+
+function openSettings(){
+
+  document
+    .getElementById("overlay")
+    .classList.add("show");
+
+  document
+    .getElementById("settingsPanel")
+    .classList.add("show");
+}
+
+function closeSettings(){
+
+  document
+    .getElementById("overlay")
+    .classList.remove("show");
+
+  document
+    .getElementById("settingsPanel")
+    .classList.remove("show");
+}
+
+/* =====================================
+   SUPABASE EN VIVO
+===================================== */
+
+db.channel("gastos-en-vivo")
+
+  .on(
+    "postgres_changes",
+    {
+      event:"*",
+      schema:"public",
+      table:"gastos_pareja"
+    },
+    ()=>{
+      cargarDatos();
     }
+  )
 
+  .subscribe();
 
-    // ==========================================
-    // CARGAR DATOS
-    // ==========================================
+/* =====================================
+   INICIO
+===================================== */
 
-    async function cargarDatos() {
-
-        const { data, error } = await db
-            .from("gastos_pareja")
-            .select("*")
-            .order("fecha", {
-                ascending: false
-            });
-
-
-        if (error) {
-
-            console.error(error);
-
-            document.getElementById("estado").innerText =
-                "❌ Error de conexión con la base";
-
-            return;
-        }
-
-
-        document.getElementById("estado").innerText =
-            "🟢 Conectado";
-
-
-        renderizar(data || []);
-
-    }
-
-
-    // ==========================================
-    // MOSTRAR DATOS
-    // ==========================================
-
-    function renderizar(datos) {
-
-        let ingresos = 0;
-
-        let totalGastos = 0;
-
-        let facu = 0;
-
-        let jaz = 0;
-
-        let medias = 0;
-
-
-        datos.forEach(item => {
-
-            if (item.tipo === "ingreso") {
-
-                ingresos += Number(item.monto);
-
-            }
-
-
-            if (item.tipo === "gasto") {
-
-                totalGastos += Number(item.monto);
-
-
-                if (item.persona === "Facu") {
-
-                    facu += Number(item.monto);
-
-                }
-
-
-                if (item.persona === "Jaz") {
-
-                    jaz += Number(item.monto);
-
-                }
-
-
-                if (item.persona === "A medias") {
-
-                    medias += Number(item.monto);
-
-                }
-
-            }
-
-        });
-
-
-        const disponible =
-            ingresos - totalGastos;
-
-
-        document.getElementById("ingreso")
-            .innerText = dinero(ingresos);
-
-
-        document.getElementById("disponible")
-            .innerText = dinero(disponible);
-
-
-        document.getElementById("facu")
-            .innerText =
-            dinero(facu + medias / 2);
-
-
-        document.getElementById("jaz")
-            .innerText =
-            dinero(jaz + medias / 2);
-
-
-        document.getElementById("medias")
-            .innerText =
-            dinero(medias);
-
-
-        document.getElementById("total")
-            .innerText =
-            dinero(totalGastos);
-
-
-        mostrarHistorial(datos);
-
-    }
-
-
-    // ==========================================
-    // MOSTRAR HISTORIAL
-    // ==========================================
-
-    function mostrarHistorial(datos) {
-
-        const historial =
-            document.getElementById("historial");
-
-
-        if (datos.length === 0) {
-
-            historial.innerHTML = `
-                <div class="mensaje">
-                    Todavía no hay movimientos.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        historial.innerHTML = "";
-
-
-        datos.forEach(item => {
-
-            let icono = "💰";
-
-
-            if (item.tipo === "gasto") {
-
-                if (item.persona === "Facu")
-                    icono = "👨";
-
-                if (item.persona === "Jaz")
-                    icono = "👩";
-
-                if (item.persona === "A medias")
-                    icono = "🤝";
-
-            }
-
-
-            const fecha =
-                new Date(item.fecha)
-                    .toLocaleDateString("es-UY");
-
-
-            historial.innerHTML += `
-
-                <div class="gasto">
-
-                    <div class="info">
-
-                        <strong>
-                            ${icono}
-                            ${escapeHTML(item.concepto)}
-                        </strong>
-
-                        <small>
-                            ${item.tipo === "ingreso"
-                                ? "Fondo común"
-                                : item.persona}
-                            · ${fecha}
-                        </small>
-
-                    </div>
-
-                    <div class="monto">
-
-                        ${dinero(Number(item.monto))}
-
-                        <br>
-
-                        <button
-                            class="borrar"
-                            onclick="eliminarMovimiento('${item.id}')"
-                        >
-                            Eliminar
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        });
-
-    }
-
-
-    // ==========================================
-    // SEGURIDAD PARA TEXTO
-    // ==========================================
-
-    function escapeHTML(texto) {
-
-        const div =
-            document.createElement("div");
-
-        div.textContent = texto;
-
-        return div.innerHTML;
-
-    }
-
-
-    // ==========================================
-    // AGREGAR FONDO
-    // ==========================================
-
-    async function agregarFondo() {
-
-        const input =
-            document.getElementById("montoFondo");
-
-
-        const monto =
-            Number(input.value);
-
-
-        if (!monto || monto <= 0) {
-
-            alert("Ingresá un monto válido.");
-
-            return;
-        }
-
-
-        const { error } = await db
-            .from("gastos_pareja")
-            .insert({
-
-                tipo: "ingreso",
-
-                concepto: "Fondo común",
-
-                monto: monto,
-
-                persona: null
-
-            });
-
-
-        if (error) {
-
-            console.error(error);
-
-            alert(
-                "No se pudo guardar el fondo."
-            );
-
-            return;
-        }
-
-
-        input.value = "";
-
-        cargarDatos();
-
-    }
-
-
-    // ==========================================
-    // AGREGAR GASTO
-    // ==========================================
-
-    async function agregarGasto() {
-
-        const concepto =
-            document.getElementById("concepto")
-                .value.trim();
-
-
-        const monto =
-            Number(
-                document.getElementById("monto")
-                    .value
-            );
-
-
-        const persona =
-            document.getElementById("persona")
-                .value;
-
-
-        if (!concepto || !monto || monto <= 0) {
-
-            alert(
-                "Ingresá un concepto y un monto válido."
-            );
-
-            return;
-        }
-
-
-        const { error } = await db
-            .from("gastos_pareja")
-            .insert({
-
-                tipo: "gasto",
-
-                concepto: concepto,
-
-                monto: monto,
-
-                persona: persona
-
-            });
-
-
-        if (error) {
-
-            console.error(error);
-
-            alert(
-                "No se pudo guardar el gasto."
-            );
-
-            return;
-        }
-
-
-        document.getElementById("concepto")
-            .value = "";
-
-        document.getElementById("monto")
-            .value = "";
-
-
-        cargarDatos();
-
-    }
-
-
-    // ==========================================
-    // ELIMINAR
-    // ==========================================
-
-    async function eliminarMovimiento(id) {
-
-        const confirmar =
-            confirm(
-                "¿Querés eliminar este movimiento?"
-            );
-
-
-        if (!confirmar) return;
-
-
-        const { error } = await db
-            .from("gastos_pareja")
-            .delete()
-            .eq("id", id);
-
-
-        if (error) {
-
-            console.error(error);
-
-            alert(
-                "No se pudo eliminar."
-            );
-
-            return;
-        }
-
-
-        cargarDatos();
-
-    }
-
-
-    // ==========================================
-    // ACTUALIZACIÓN AUTOMÁTICA
-    // ==========================================
-
-    db.channel("gastos-en-vivo")
-
-        .on(
-            "postgres_changes",
-            {
-                event: "*",
-                schema: "public",
-                table: "gastos_pareja"
-            },
-            () => {
-
-                cargarDatos();
-
-            }
-        )
-
-        .subscribe();
-
-
-    // ==========================================
-    // INICIO
-    // ==========================================
-
-    cargarDatos();
+cargarTema();
+cargarDatos();
 
 </script>
 
