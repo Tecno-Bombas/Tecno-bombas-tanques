@@ -2556,3 +2556,26 @@ function mostrarEstrellasToast(texto){
 
 /* Iniciar la UI de recompensas antes de cargar los datos. */
 asegurarUIRecompensas();
+// INICIO CORREGIDO
+window.addEventListener("load", async function(){
+
+  try {
+    const tema = localStorage.getItem("facujaz_tema") || "kawaii";
+    cambiarTema(tema);
+  } catch(e) {
+    console.error("Error tema:", e);
+  }
+
+  try {
+    actualizarAvatares();
+  } catch(e) {
+    console.error("Error avatares:", e);
+  }
+
+  try {
+    await cargarDatos();
+  } catch(e) {
+    console.error("Error cargando datos:", e);
+  }
+
+});
