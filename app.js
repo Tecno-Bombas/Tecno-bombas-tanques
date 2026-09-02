@@ -190,51 +190,49 @@ function mostrarSeccion(s){
    ========================================================= */
 
 async function cargarDatos(){
-
+  // Cargar movimientos
   const m = await db
     .from("gastos_pareja")
     .select("*")
     .order("fecha",{ascending:false});
 
   if(m.error){
-    console.error(m.error);
+    console.error("Error movimientos:",m.error);
     alert("No se pudieron cargar los movimientos.");
     return;
   }
 
   datos = m.data || [];
 
+  // Cargar pendientes
   const p = await db
     .from("gastos_pendientes")
     .select("*")
     .order("fecha_creacion",{ascending:false});
 
   if(p.error){
-    console.error(p.error);
+    console.error("Error pendientes:",p.error);
     alert("No se pudieron cargar los pendientes.");
     return;
   }
 
   pendientes = p.data || [];
 
-  await cargarRecompensas();
-
-  actualizarTodo();
-}
-
-function actualizarTodo(){
-
+  // Mostrar inmediatamente los pendientes
   calcularResumen();
-
   mostrarMovimientos();
-
   mostrarPendientes();
-
-  mostrarRecompensas();
-
   actualizarAvatares();
-}
 
+  // Las recompensas se cargan aparte.
+  // Si hay algún problema con ellas, no afecta a Pendientes.
+  try{
+    await cargarRecompensas();
+    mostrarRecompensas();
+  }catch(error){
+    console.error("Error recompensas:",error);
+  }
+}
 
 /* =========================================================
    RESUMEN
