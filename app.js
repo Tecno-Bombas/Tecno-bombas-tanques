@@ -854,126 +854,78 @@ function abrirPagar(id){
 
 }
 
-
 async function confirmarPago(){
+  if(!pendienteSeleccionado) return;
 
-  if(!pendienteSeleccionado)
-    return;
+  const p=pendienteSeleccionado;
+  const persona=document.getElementById("pagarPersona").value;
 
-
-  const p =
-    pendienteSeleccionado;
-
-
-  const persona =
-    document.getElementById(
-      "pagarPersona"
-    ).value;
-
-
-  const {error:e1} =
-    await db
-      .from("gastos_pareja")
-      .insert({
-
-        tipo:"gasto",
-
-        concepto:p.concepto,
-
-        monto:p.monto,
-
-        persona
-
-      });
-
+  const {error:e1}=await db.from("gastos_pareja").insert({
+    tipo:"gasto",
+    concepto:p.concepto,
+    monto:p.monto,
+    persona
+  });
 
   if(e1){
-
     console.error(e1);
-
-    return alert(
-      "No se pudo registrar el pago."
-    );
-
+    return alert("No se pudo registrar el pago.");
   }
 
-
-  const {error:e2} =
-    await db
-      .from("gastos_pendientes")
-      .delete()
-      .eq("id",p.id);
-
+  const {error:e2}=await db
+    .from("gastos_pendientes")
+    .delete()
+    .eq("id",p.id);
 
   if(e2){
-
     console.error(e2);
-
-    return alert(
-      "El pago se registró, pero no se pudo eliminar el pendiente."
-    );
-
+    return alert("El pago se registró, pero no se pudo eliminar el pendiente.");
   }
 
+  // ⭐ Premio por pagar el pendiente
+  const premios = persona==="A medias"
+    ? {Facu:0.5,Jaz:0.5}
+    : {[persona]:1};
+
+  for(const quien of Object.keys(premios)){
+    const suma=premios[quien];
+
+    const {data,error}=await db
+      .from("estrellas_pareja")
+      .select("estrellas")
+      .eq("persona",quien)
+      .single();
+
+    if(error || !data){
+      console.error(error);
+      return alert("El pago se registró, pero no se pudieron sumar las estrellas.");
+    }
+
+    const {error:updateError}=await db
+      .from("estrellas_pareja")
+      .update({
+        estrellas:Number(data.estrellas||0)+suma
+      })
+      .eq("persona",quien);
+
+    if(updateError){
+      console.error(updateError);
+      return alert("El pago se registró, pero no se pudieron sumar las estrellas.");
+    }
+  }
 
   eliminarRecordatorio(p.id);
-
-  pendienteSeleccionado = null;
-
+  pendienteSeleccionado=null;
   cerrarModal("modalPagar");
 
   await cargarDatos();
 
-}
-
-
-/* ELIMINAR PENDIENTE */
-
-async function eliminarPendiente(id){
-
-  const p =
-    pendientes.find(
-      x => x.id === id
-    );
-
-  if(!p)
-    return;
-
-
-  if(
-    !confirm(
-      "¿Querés eliminar este pendiente?\n\n" +
-      p.concepto +
-      "\n" +
-      dinero(p.monto)
-    )
-  )
-    return;
-
-
-  const {error} =
-    await db
-      .from("gastos_pendientes")
-      .delete()
-      .eq("id",id);
-
-
-  if(error){
-
-    console.error(error);
-
-    return alert(
-      "No se pudo eliminar."
-    );
-
+  if(persona==="A medias"){
+    mostrarEstrellasToast("⭐ +0,5 para Facu y +0,5 para Jaz");
+  }else{
+    mostrarEstrellasToast("⭐ +1 estrella para "+persona);
   }
 
-
-  eliminarRecordatorio(id);
-
-  await cargarDatos();
-
-}
 
 
 /* =========================================================
