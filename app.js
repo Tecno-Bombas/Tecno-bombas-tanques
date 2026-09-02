@@ -8,34 +8,118 @@ let pendienteSeleccionado = null;
 let personaAvatar = "Facu";
 let avatarTemporal = null;
 
+let estrellas = {Facu:0,Jaz:0};
+let recompensas = [];
+let historialRecompensas = [];
+
 const temas = {
-  blue:{primary:"#4f7cff",dark:"#315fe0",bg:"#f4f7ff",card:"#fff",text:"#202638",muted:"#7b8499",border:"#e7eaf2"},
-  pink:{primary:"#ed6c9b",dark:"#d94f82",bg:"#fff3f8",card:"#fff",text:"#4a3340",muted:"#a4778c",border:"#f4d7e5"},
-  purple:{primary:"#8b6cff",dark:"#684ee0",bg:"#f7f4ff",card:"#fff",text:"#3d3552",muted:"#877e9e",border:"#e3dcf5"},
-  green:{primary:"#2ebd86",dark:"#179768",bg:"#f1fbf7",card:"#fff",text:"#29483d",muted:"#78968a",border:"#d8eee5"},
-  orange:{primary:"#f59d3d",dark:"#df7d16",bg:"#fff8ef",card:"#fff",text:"#4b3c2c",muted:"#9b8771",border:"#f1dfc8"},
-  dark:{primary:"#738cff",dark:"#536bdc",bg:"#111522",card:"#1b2131",text:"#f2f4fa",muted:"#929bb0",border:"#2a3245"},
-  kawaii:{primary:"#ff79a8",dark:"#ff5792",bg:"#fff5fa",card:"#fff",text:"#4a3340",muted:"#a4778c",border:"#f5dbe7"}
+  blue:{
+    primary:"#4f7cff",
+    dark:"#315fe0",
+    bg:"#f4f7ff",
+    card:"#fff",
+    text:"#202638",
+    muted:"#7b8499",
+    border:"#e7eaf2"
+  },
+  pink:{
+    primary:"#ed6c9b",
+    dark:"#d94f82",
+    bg:"#fff3f8",
+    card:"#fff",
+    text:"#4a3340",
+    muted:"#a4778c",
+    border:"#f4d7e5"
+  },
+  purple:{
+    primary:"#8b6cff",
+    dark:"#684ee0",
+    bg:"#f7f4ff",
+    card:"#fff",
+    text:"#3d3552",
+    muted:"#877e9e",
+    border:"#e3dcf5"
+  },
+  green:{
+    primary:"#2ebd86",
+    dark:"#179768",
+    bg:"#f1fbf7",
+    card:"#fff",
+    text:"#29483d",
+    muted:"#78968a",
+    border:"#d8eee5"
+  },
+  orange:{
+    primary:"#f59d3d",
+    dark:"#df7d16",
+    bg:"#fff8ef",
+    card:"#fff",
+    text:"#4b3c2c",
+    muted:"#9b8771",
+    border:"#f1dfc8"
+  },
+  dark:{
+    primary:"#738cff",
+    dark:"#536bdc",
+    bg:"#111522",
+    card:"#1b2131",
+    text:"#f2f4fa",
+    muted:"#929bb0",
+    border:"#2a3245"
+  },
+  kawaii:{
+    primary:"#ff79a8",
+    dark:"#ff5792",
+    bg:"#fff5fa",
+    card:"#fff",
+    text:"#4a3340",
+    muted:"#a4778c",
+    border:"#f5dbe7"
+  }
 };
 
 function dinero(v){
-  return "$ " + Number(v || 0).toLocaleString("es-UY",{maximumFractionDigits:2});
+  return "$ " + Number(v || 0).toLocaleString("es-UY",{
+    maximumFractionDigits:2
+  });
 }
 
 function fechaBonita(v){
   if(!v) return "";
-  const d = new Date(v.includes("T") ? v : v+"T00:00:00");
-  return d.toLocaleDateString("es-UY",{day:"2-digit",month:"2-digit",year:"numeric"});
+
+  const d = new Date(
+    v.includes("T") ? v : v+"T00:00:00"
+  );
+
+  return d.toLocaleDateString("es-UY",{
+    day:"2-digit",
+    month:"2-digit",
+    year:"numeric"
+  });
 }
 
 function mesBonito(v){
   if(!v) return "";
+
   const [y,m] = v.substring(0,7).split("-");
-  return new Date(Number(y),Number(m)-1,1).toLocaleDateString("es-UY",{month:"long",year:"numeric"});
+
+  return new Date(
+    Number(y),
+    Number(m)-1,
+    1
+  ).toLocaleDateString("es-UY",{
+    month:"long",
+    year:"numeric"
+  });
 }
 
 function escapeHTML(t){
-  return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  return String(t)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 function limpiar(id){
@@ -52,42 +136,65 @@ function cerrarModal(id){
 
 document.querySelectorAll(".modal-bg").forEach(m=>{
   m.addEventListener("click",e=>{
-    if(e.target===m) m.classList.remove("show");
+    if(e.target===m){
+      m.classList.remove("show");
+    }
   });
 });
 
 function mostrarSeccion(s){
-  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+
+  document
+    .querySelectorAll(".section")
+    .forEach(x=>x.classList.remove("active"));
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(x=>x.classList.remove("active"));
 
   const section=document.getElementById(s);
-  if(section) section.classList.add("active");
 
-  const tabId=
-    s==="movimientos"
-      ? "tabMovimientos"
-      : s==="pendientes"
-        ? "tabPendientes"
-        : "tabRecompensas";
+  if(section){
+    section.classList.add("active");
+  }
+
+  let tabId;
+
+  if(s==="movimientos"){
+    tabId="tabMovimientos";
+  }else if(s==="pendientes"){
+    tabId="tabPendientes";
+  }else{
+    tabId="tabRecompensas";
+  }
 
   const tab=document.getElementById(tabId);
-  if(tab) tab.classList.add("active");
 
-  if(s==="recompensas") mostrarRecompensas();
+  if(tab){
+    tab.classList.add("active");
+  }
 
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(s==="recompensas"){
+    mostrarRecompensas();
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
 }
 
 
-/* DATOS */
+/* =========================================================
+   DATOS
+   ========================================================= */
 
 async function cargarDatos(){
 
-  const m =
-    await db
-      .from("gastos_pareja")
-      .select("*")
-      .order("fecha",{ascending:false});
+  const m = await db
+    .from("gastos_pareja")
+    .select("*")
+    .order("fecha",{ascending:false});
 
   if(m.error){
     console.error(m.error);
@@ -97,12 +204,10 @@ async function cargarDatos(){
 
   datos = m.data || [];
 
-
-  const p =
-    await db
-      .from("gastos_pendientes")
-      .select("*")
-      .order("fecha_creacion",{ascending:false});
+  const p = await db
+    .from("gastos_pendientes")
+    .select("*")
+    .order("fecha_creacion",{ascending:false});
 
   if(p.error){
     console.error(p.error);
@@ -112,21 +217,28 @@ async function cargarDatos(){
 
   pendientes = p.data || [];
 
+  await cargarRecompensas();
+
   actualizarTodo();
 }
-
 
 function actualizarTodo(){
 
   calcularResumen();
-  mostrarMovimientos();
-  mostrarPendientes();
-  actualizarAvatares();
 
+  mostrarMovimientos();
+
+  mostrarPendientes();
+
+  mostrarRecompensas();
+
+  actualizarAvatares();
 }
 
 
-/* RESUMEN */
+/* =========================================================
+   RESUMEN
+   ========================================================= */
 
 function calcularResumen(){
 
@@ -135,7 +247,6 @@ function calcularResumen(){
   let facu=0;
   let jaz=0;
   let medias=0;
-
 
   datos.forEach(x=>{
 
@@ -149,252 +260,202 @@ function calcularResumen(){
 
       gastos+=m;
 
-      if(x.persona==="Facu")
+      if(x.persona==="Facu"){
         facu+=m;
-
-      if(x.persona==="Jaz")
-        jaz+=m;
-
-      if(x.persona==="A medias"){
-
-        medias+=m;
-
-        facu+=m/2;
-        jaz+=m/2;
-
       }
 
-    }
+      if(x.persona==="Jaz"){
+        jaz+=m;
+      }
 
+      if(x.persona==="A medias"){
+        medias+=m;
+        facu+=m/2;
+        jaz+=m/2;
+      }
+    }
   });
 
+  document.getElementById("saldo").textContent=
+    dinero(ingresos-gastos);
 
-  document.getElementById("saldo")
-    .textContent=dinero(ingresos-gastos);
+  document.getElementById("ingresado").textContent=
+    dinero(ingresos);
 
-  document.getElementById("ingresado")
-    .textContent=dinero(ingresos);
+  document.getElementById("gastado").textContent=
+    dinero(gastos);
 
-  document.getElementById("gastado")
-    .textContent=dinero(gastos);
+  document.getElementById("facuTotal").textContent=
+    dinero(facu);
 
-  document.getElementById("facuTotal")
-    .textContent=dinero(facu);
+  document.getElementById("jazTotal").textContent=
+    dinero(jaz);
 
-  document.getElementById("jazTotal")
-    .textContent=dinero(jaz);
+  document.getElementById("mediasTotal").textContent=
+    dinero(medias);
 
-  document.getElementById("mediasTotal")
-    .textContent=dinero(medias);
-
-  document.getElementById("totalGastos")
-    .textContent=
-      datos.filter(x=>x.tipo==="gasto").length;
-
+  document.getElementById("totalGastos").textContent=
+    datos.filter(x=>x.tipo==="gasto").length;
 }
 
 
-/* AGREGAR MOVIMIENTO */
+/* =========================================================
+   MOVIMIENTOS
+   ========================================================= */
 
 async function agregarMovimiento(){
 
-  const concepto =
-    document
-      .getElementById("concepto")
-      .value
-      .trim();
+  const concepto=
+    document.getElementById("concepto").value.trim();
 
-  const monto =
-    Number(
-      document.getElementById("monto").value
-    );
+  const monto=
+    Number(document.getElementById("monto").value);
 
-  const tipo =
+  const tipo=
     document.getElementById("tipo").value;
 
-  const persona =
+  const persona=
     tipo==="ingreso"
       ? "A medias"
       : document.getElementById("persona").value;
 
-
-  if(!concepto)
+  if(!concepto){
     return alert("Poné un concepto.");
+  }
 
-  if(!monto || monto<=0)
+  if(!monto || monto<=0){
     return alert("Poné un monto válido.");
+  }
 
-
-  const {error} =
-    await db
-      .from("gastos_pareja")
-      .insert({
-        tipo,
-        concepto,
-        monto,
-        persona
-      });
-
+  const {error}=await db
+    .from("gastos_pareja")
+    .insert({
+      tipo,
+      concepto,
+      monto,
+      persona
+    });
 
   if(error){
     console.error(error);
     return alert("No se pudo guardar el movimiento.");
   }
 
-
   limpiar("concepto");
   limpiar("monto");
 
   await cargarDatos();
-
 }
-
 
 function actualizarPersonaSegunTipo(){
 
-  const tipo =
+  const tipo=
     document.getElementById("tipo").value;
 
-  const persona =
+  const persona=
     document.getElementById("persona");
 
+  persona.disabled=tipo==="ingreso";
 
-  persona.disabled =
-    tipo==="ingreso";
-
-
-  if(tipo==="ingreso")
+  if(tipo==="ingreso"){
     persona.value="A medias";
-
+  }
 }
-
-
-/* MOSTRAR MOVIMIENTOS */
 
 function mostrarMovimientos(){
 
-  const c =
-    document.getElementById(
-      "listaMovimientos"
-    );
-
+  const c=
+    document.getElementById("listaMovimientos");
 
   if(!datos.length){
 
-    c.innerHTML =
-      '<div class="empty">' +
-      '<div class="empty-icon">💸</div>' +
-      'Todavía no hay movimientos.' +
-      '</div>';
+    c.innerHTML=
+      '<div class="empty"><div class="empty-icon">💸</div>Todavía no hay movimientos.</div>';
 
     return;
-
   }
 
+  c.innerHTML=datos.map(x=>{
 
-  c.innerHTML =
-    datos.map(x=>{
+    const ingreso=
+      x.tipo==="ingreso";
 
-      const ingreso =
-        x.tipo==="ingreso";
+    const nombre=
+      ingreso
+        ? "💰 Ingreso"
+        : "💸 "+(x.persona||"");
 
-      const nombre =
-        ingreso
-          ? "💰 Ingreso"
-          : "💸 "+(x.persona||"");
+    return `
+      <div class="movement">
 
+        <div class="movement-left">
 
-      return `
-
-        <div class="movement">
-
-          <div class="movement-left">
-
-            <div class="movement-title">
-              ${escapeHTML(x.concepto)}
-            </div>
-
-            <div class="movement-meta">
-              ${fechaBonita(x.fecha)}
-              ·
-              ${escapeHTML(nombre)}
-            </div>
-
+          <div class="movement-title">
+            ${escapeHTML(x.concepto)}
           </div>
 
-
-          <div class="movement-right">
-
-            <div class="amount ${ingreso?"income":"expense"}">
-              ${ingreso?"+":"-"}${dinero(x.monto)}
-            </div>
-
-            <button
-              class="delete-btn"
-              onclick="eliminarMovimiento('${x.id}')"
-            >
-              🗑️
-            </button>
-
+          <div class="movement-meta">
+            ${fechaBonita(x.fecha)} · ${escapeHTML(nombre)}
           </div>
 
         </div>
 
-      `;
+        <div class="movement-right">
 
-    }).join("");
+          <div class="amount ${ingreso?"income":"expense"}">
+            ${ingreso?"+":"-"}${dinero(x.monto)}
+          </div>
 
+          <button
+            class="delete-btn"
+            onclick="eliminarMovimiento('${x.id}')">
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+  }).join("");
 }
-
-
-/* ELIMINAR MOVIMIENTO */
 
 async function eliminarMovimiento(id){
 
-  const x =
+  const x=
     datos.find(a=>a.id===id);
 
   if(!x) return;
 
-
-  if(
-    !confirm(
-      "¿Querés eliminar este movimiento?\n\n"+
-      x.concepto+"\n"+
-      dinero(x.monto)
-    )
-  )
+  if(!confirm(
+    "¿Querés eliminar este movimiento?\n\n"+
+    x.concepto+"\n"+
+    dinero(x.monto)
+  )){
     return;
-
-
-  const {error} =
-    await db
-      .from("gastos_pareja")
-      .delete()
-      .eq("id",id);
-
-
-  if(error){
-
-    console.error(error);
-
-    return alert(
-      "No se pudo eliminar."
-    );
-
   }
 
+  const {error}=await db
+    .from("gastos_pareja")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    console.error(error);
+    return alert("No se pudo eliminar.");
+  }
 
   await cargarDatos();
-
 }
 
 
-/* FONDO */
+/* =========================================================
+   FONDO COMÚN
+   ========================================================= */
 
 function abrirEditarFondo(){
 
-  const ingresos =
+  const ingresos=
     datos
       .filter(x=>x.tipo==="ingreso")
       .reduce(
@@ -402,240 +463,165 @@ function abrirEditarFondo(){
         0
       );
 
-
-  document.getElementById(
-    "nuevoFondo"
-  ).value=ingresos;
-
+  document.getElementById("nuevoFondo").value=
+    ingresos;
 
   abrirModal("modalFondo");
-
 }
-
 
 async function guardarFondo(){
 
-  const nuevo =
+  const nuevo=
     Number(
-      document.getElementById(
-        "nuevoFondo"
-      ).value
+      document.getElementById("nuevoFondo").value
     );
 
+  if(Number.isNaN(nuevo)||nuevo<0){
+    return alert("Poné un monto válido.");
+  }
 
-  if(
-    Number.isNaN(nuevo) ||
-    nuevo<0
-  )
-    return alert(
-      "Poné un monto válido."
-    );
-
-
-  const ingresos =
-    datos.filter(
-      x=>x.tipo==="ingreso"
-    );
-
+  const ingresos=
+    datos.filter(x=>x.tipo==="ingreso");
 
   for(const x of ingresos){
 
-    const {error} =
-      await db
-        .from("gastos_pareja")
-        .delete()
-        .eq("id",x.id);
-
+    const {error}=await db
+      .from("gastos_pareja")
+      .delete()
+      .eq("id",x.id);
 
     if(error){
-
       console.error(error);
-
-      return alert(
-        "No se pudo editar el fondo."
-      );
-
+      return alert("No se pudo editar el fondo.");
     }
-
   }
-
 
   if(nuevo>0){
 
-    const {error} =
-      await db
-        .from("gastos_pareja")
-        .insert({
-          tipo:"ingreso",
-          concepto:"Fondo común",
-          monto:nuevo,
-          persona:"A medias"
-        });
-
+    const {error}=await db
+      .from("gastos_pareja")
+      .insert({
+        tipo:"ingreso",
+        concepto:"Fondo común",
+        monto:nuevo,
+        persona:"A medias"
+      });
 
     if(error){
-
       console.error(error);
-
-      return alert(
-        "No se pudo guardar el nuevo fondo."
-      );
-
+      return alert("No se pudo guardar el nuevo fondo.");
     }
-
   }
-
 
   cerrarModal("modalFondo");
 
   await cargarDatos();
-
 }
 
 
-/* PENDIENTES */
+/* =========================================================
+   PENDIENTES
+   ========================================================= */
 
 async function agregarPendiente(){
 
-  const concepto =
-    document
-      .getElementById("pendConcepto")
-      .value
-      .trim();
+  const concepto=
+    document.getElementById("pendConcepto")
+      .value.trim();
 
-  const monto =
+  const monto=
     Number(
-      document
-        .getElementById("pendMonto")
-        .value
+      document.getElementById("pendMonto").value
     );
 
-  const mes =
-    document
-      .getElementById("pendMes")
-      .value;
+  const mes=
+    document.getElementById("pendMes").value;
 
-  const venc =
-    document
-      .getElementById("pendVencimiento")
-      .value || null;
+  const venc=
+    document.getElementById("pendVencimiento").value || null;
 
-
-  if(!concepto)
-    return alert(
-      "Poné qué tenés que pagar."
-    );
-
-
-  if(!monto || monto<=0)
-    return alert(
-      "Poné un monto válido."
-    );
-
-
-  if(!mes)
-    return alert(
-      "Elegí el mes de la deuda."
-    );
-
-
-  const {error} =
-    await db
-      .from("gastos_pendientes")
-      .insert({
-        concepto,
-        monto,
-        mes_deuda:mes+"-01",
-        fecha_vencimiento:venc
-      });
-
-
-  if(error){
-
-    console.error(error);
-
-    return alert(
-      "No se pudo guardar el pendiente."
-    );
-
+  if(!concepto){
+    return alert("Poné qué tenés que pagar.");
   }
 
+  if(!monto||monto<=0){
+    return alert("Poné un monto válido.");
+  }
+
+  if(!mes){
+    return alert("Elegí el mes de la deuda.");
+  }
+
+  const {error}=await db
+    .from("gastos_pendientes")
+    .insert({
+      concepto,
+      monto,
+      mes_deuda:mes+"-01",
+      fecha_vencimiento:venc
+    });
+
+  if(error){
+    console.error(error);
+    return alert("No se pudo guardar el pendiente.");
+  }
 
   limpiar("pendConcepto");
   limpiar("pendMonto");
 
-  document.getElementById(
-    "pendMes"
-  ).value="";
-
-  document.getElementById(
-    "pendVencimiento"
-  ).value="";
-
+  document.getElementById("pendMes").value="";
+  document.getElementById("pendVencimiento").value="";
 
   await cargarDatos();
-
 }
-
 
 function diasPendiente(p){
 
-  const inicio =
-    new Date(
-      p.mes_deuda+"T00:00:00"
-    );
-
+  const inicio=
+    new Date(p.mes_deuda+"T00:00:00");
 
   return Math.max(
     0,
     Math.floor(
-      (Date.now()-inicio.getTime())
-      /86400000
+      (Date.now()-inicio.getTime())/86400000
     )
   );
-
 }
-
 
 function alertaClase(dias){
 
-  if(dias>=90)
-    return "high";
+  if(dias>=90) return "high";
 
-  if(dias>=45)
-    return "medium";
+  if(dias>=45) return "medium";
 
   return "low";
-
 }
-
-
-/* MOSTRAR PENDIENTES */
 
 function mostrarPendientes(){
 
-  const lista =
+  const lista=
     document.getElementById("listaPendientes");
 
-  const resumen =
+  const resumen=
     document.getElementById("pendingSummary");
 
-  const ahora = new Date();
+  const ahora=new Date();
 
-  const atrasados =
-    pendientes.filter(p =>
-      p.fecha_vencimiento &&
+  const atrasados=
+    pendientes.filter(
+      p=>p.fecha_vencimiento &&
       new Date(
-        p.fecha_vencimiento + "T23:59:59"
-      ) < ahora
+        p.fecha_vencimiento+"T23:59:59"
+      )<ahora
     ).length;
 
-  const conRecordatorio =
-    pendientes.filter(p =>
-      obtenerRecordatorio(p.id)
+  const conRecordatorio=
+    pendientes.filter(
+      p=>obtenerRecordatorio(p.id)
     ).length;
 
-  resumen.innerHTML = `
+  resumen.innerHTML=`
+
     <div class="badge">
       🧾 ${pendientes.length}
       pendiente${pendientes.length===1?"":"s"}
@@ -643,233 +629,193 @@ function mostrarPendientes(){
 
     ${
       atrasados
-      ? `
-        <div class="badge">
-          ⚠️ ${atrasados}
-          atrasado${atrasados===1?"":"s"}
-        </div>
-      `
-      : ""
+      ?
+      `<div class="badge">
+        ⚠️ ${atrasados}
+        atrasado${atrasados===1?"":"s"}
+      </div>`
+      :
+      ""
     }
 
     ${
       conRecordatorio
-      ? `
-        <div class="badge">
-          🔔 ${conRecordatorio}
-          con recordatorio
-        </div>
-      `
-      : ""
+      ?
+      `<div class="badge">
+        🔔 ${conRecordatorio} con recordatorio
+      </div>`
+      :
+      ""
     }
-  `;
 
+  `;
 
   if(!pendientes.length){
 
-    lista.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">
-          🎉
-        </div>
-
-        No tenés gastos pendientes.
-      </div>
-    `;
+    lista.innerHTML=
+      '<div class="empty"><div class="empty-icon">🎉</div>No tenés gastos pendientes.</div>';
 
     return;
   }
 
+  lista.innerHTML=pendientes.map(p=>{
 
-  lista.innerHTML =
-    pendientes.map(p => {
+    const dias=
+      diasPendiente(p);
 
-      const dias =
-        diasPendiente(p);
+    const clase=
+      alertaClase(dias);
 
-      const clase =
-        alertaClase(dias);
+    const vencido=
+      p.fecha_vencimiento &&
+      new Date(
+        p.fecha_vencimiento+"T23:59:59"
+      )<ahora;
 
-      const vencido =
-        p.fecha_vencimiento &&
-        new Date(
-          p.fecha_vencimiento + "T23:59:59"
-        ) < ahora;
+    const r=
+      obtenerRecordatorio(p.id);
 
-      const r =
-        obtenerRecordatorio(p.id);
+    let alerta="";
 
+    if(vencido){
 
-      let alerta = "";
+      alerta=
+        "🔴 Este pago está vencido.";
 
-      if(vencido){
+    }else if(dias>=90){
 
-        alerta =
-          "🔴 Este pago está vencido.";
+      alerta=
+        "🚨 Hace bastante tiempo que está pendiente.";
 
-      }
-      else if(dias >= 90){
+    }else if(dias>=45){
 
-        alerta =
-          "🚨 Hace bastante tiempo que está pendiente.";
+      alerta=
+        "⚠️ Hace varias semanas que está pendiente.";
 
-      }
-      else if(dias >= 45){
+    }else if(dias>=15){
 
-        alerta =
-          "⚠️ Hace varias semanas que está pendiente.";
+      alerta=
+        "🟡 Ya lleva algunos días pendiente.";
+    }
 
-      }
-      else if(dias >= 15){
+    return `
+      <div class="pending-card ${clase}">
 
-        alerta =
-          "🟡 Ya lleva algunos días pendiente.";
+        <div class="pending-top">
 
-      }
-
-
-      return `
-
-        <div class="pending-card ${clase}">
-
-          <div class="pending-top">
-
-            <div class="pending-title">
-              🧾 ${escapeHTML(p.concepto)}
-            </div>
-
-            <div class="pending-amount">
-              ${dinero(p.monto)}
-            </div>
-
+          <div class="pending-title">
+            🧾 ${escapeHTML(p.concepto)}
           </div>
 
-
-          <div class="pending-info">
-
-            📅 ${escapeHTML(
-              mesBonito(p.mes_deuda)
-            )}
-
-            ${
-              p.fecha_vencimiento
-              ? `
-                <br>
-                📆 Vence:
-                ${fechaBonita(
-                  p.fecha_vencimiento
-                )}
-              `
-              : ""
-            }
-
-            ${
-              r
-              ? `
-                <br>
-                🔔 Recordatorio:
-                ${fechaBonita(r.fecha)}
-                a las
-                ${escapeHTML(r.hora)}
-              `
-              : ""
-            }
-
-          </div>
-
-
-          ${
-            alerta
-            ? `
-              <div class="pending-alert
-                ${dias>=90 || vencido ? "high" : ""}
-              ">
-                ${alerta}
-              </div>
-            `
-            : ""
-          }
-
-
-          <div class="pending-actions">
-
-            <button
-              class="pay-btn"
-              onclick="abrirPagar('${p.id}')"
-            >
-              💳 Pagar
-            </button>
-
-
-            <button
-              class="reminder-btn"
-              onclick="abrirRecordatorio('${p.id}')"
-            >
-              ${
-                r
-                ? "🔔 Editar"
-                : "🔔 Recordarme"
-              }
-            </button>
-
-
-            <button
-              class="pending-delete"
-              onclick="eliminarPendiente('${p.id}')"
-            >
-              🗑️
-            </button>
-
+          <div class="pending-amount">
+            ${dinero(p.monto)}
           </div>
 
         </div>
 
-      `;
+        <div class="pending-info">
 
-    }).join("");
+          📅 ${escapeHTML(
+            mesBonito(p.mes_deuda)
+          )}
 
+          ${
+            p.fecha_vencimiento
+            ?
+            `<br>📆 Vence:
+            ${fechaBonita(p.fecha_vencimiento)}`
+            :
+            ""
+          }
+
+          ${
+            r
+            ?
+            `<br>🔔 Recordatorio:
+            ${fechaBonita(r.fecha)}
+            a las ${escapeHTML(r.hora)}`
+            :
+            ""
+          }
+
+        </div>
+
+        ${
+          alerta
+          ?
+          `<div class="pending-alert ${
+            dias>=90||vencido?"high":""
+          }">
+            ${alerta}
+          </div>`
+          :
+          ""
+        }
+
+        <div class="pending-actions">
+
+          <button
+            class="pay-btn"
+            onclick="abrirPagar('${p.id}')">
+            💳 Pagar
+          </button>
+
+          <button
+            class="reminder-btn"
+            onclick="abrirRecordatorio('${p.id}')">
+            ${r?"🔔 Editar":"🔔 Recordarme"}
+          </button>
+
+          <button
+            class="pending-delete"
+            onclick="eliminarPendiente('${p.id}')">
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+  }).join("");
 }
-
-
-/* PAGAR PENDIENTE */
 
 function abrirPagar(id){
 
-  pendienteSeleccionado =
+  pendienteSeleccionado=
     pendientes.find(
-      p => p.id === id
+      p=>p.id===id
     );
 
-  if(!pendienteSeleccionado)
-    return;
-
+  if(!pendienteSeleccionado) return;
 
   document.getElementById(
     "pagarNombre"
-  ).textContent =
-    pendienteSeleccionado.concepto +
-    " · " +
-    dinero(
-      pendienteSeleccionado.monto
-    );
-
+  ).textContent=
+    pendienteSeleccionado.concepto+
+    " · "+
+    dinero(pendienteSeleccionado.monto);
 
   abrirModal("modalPagar");
-
 }
 
 async function confirmarPago(){
+
   if(!pendienteSeleccionado) return;
 
   const p=pendienteSeleccionado;
-  const persona=document.getElementById("pagarPersona").value;
 
-  const {error:e1}=await db.from("gastos_pareja").insert({
-    tipo:"gasto",
-    concepto:p.concepto,
-    monto:p.monto,
-    persona
-  });
+  const persona=
+    document.getElementById("pagarPersona").value;
+
+  const {error:e1}=await db
+    .from("gastos_pareja")
+    .insert({
+      tipo:"gasto",
+      concepto:p.concepto,
+      monto:p.monto,
+      persona
+    });
 
   if(e1){
     console.error(e1);
@@ -883,15 +829,20 @@ async function confirmarPago(){
 
   if(e2){
     console.error(e2);
-    return alert("El pago se registró, pero no se pudo eliminar el pendiente.");
+    return alert(
+      "El pago se registró, pero no se pudo eliminar el pendiente."
+    );
   }
 
   // ⭐ Premio por pagar el pendiente
-  const premios = persona==="A medias"
-    ? {Facu:0.5,Jaz:0.5}
-    : {[persona]:1};
+
+  const premios =
+    persona==="A medias"
+      ? {Facu:0.5,Jaz:0.5}
+      : {[persona]:1};
 
   for(const quien of Object.keys(premios)){
+
     const suma=premios[quien];
 
     const {data,error}=await db
@@ -901,8 +852,12 @@ async function confirmarPago(){
       .single();
 
     if(error || !data){
+
       console.error(error);
-      return alert("El pago se registró, pero no se pudieron sumar las estrellas.");
+
+      return alert(
+        "El pago se registró, pero no se pudieron sumar las estrellas."
+      );
     }
 
     const {error:updateError}=await db
@@ -913,29 +868,73 @@ async function confirmarPago(){
       .eq("persona",quien);
 
     if(updateError){
+
       console.error(updateError);
-      return alert("El pago se registró, pero no se pudieron sumar las estrellas.");
+
+      return alert(
+        "El pago se registró, pero no se pudieron sumar las estrellas."
+      );
     }
   }
 
   eliminarRecordatorio(p.id);
+
   pendienteSeleccionado=null;
+
   cerrarModal("modalPagar");
 
   await cargarDatos();
 
   if(persona==="A medias"){
-    mostrarEstrellasToast("⭐ +0,5 para Facu y +0,5 para Jaz");
+
+    mostrarEstrellasToast(
+      "⭐ +0,5 para Facu y +0,5 para Jaz"
+    );
+
   }else{
-    mostrarEstrellasToast("⭐ +1 estrella para "+persona);
+
+    mostrarEstrellasToast(
+      "⭐ +1 estrella para "+persona
+    );
+  }
+}
+
+
+async function eliminarPendiente(id){
+
+  const p=
+    pendientes.find(x=>x.id===id);
+
+  if(!p) return;
+
+  if(!confirm(
+    "¿Querés eliminar este pendiente?\n\n"+
+    p.concepto+"\n"+
+    dinero(p.monto)
+  )){
+    return;
   }
 
+  const {error}=await db
+    .from("gastos_pendientes")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    console.error(error);
+    return alert("No se pudo eliminar.");
+  }
+
+  eliminarRecordatorio(id);
+
+  await cargarDatos();
+}
 
 
 /* =========================================================
    RECORDATORIOS
    Se guardan solamente en este teléfono.
-========================================================= */
+   ========================================================= */
 
 function obtenerRecordatorios(){
 
@@ -947,257 +946,172 @@ function obtenerRecordatorios(){
       ) || "{}"
     );
 
-  }
-  catch{
+  }catch{
 
     return {};
-
   }
-
 }
 
-
-function guardarTodosRecordatorios(obj){
+function guardarTodosRecordatorios(o){
 
   localStorage.setItem(
     "facujaz_recordatorios",
-    JSON.stringify(obj)
+    JSON.stringify(o)
   );
-
 }
-
 
 function obtenerRecordatorio(id){
 
-  const todos =
-    obtenerRecordatorios();
-
-  return todos[id] || null;
-
+  return obtenerRecordatorios()[id] || null;
 }
-
 
 function eliminarRecordatorio(id){
 
-  const todos =
-    obtenerRecordatorios();
+  const o=obtenerRecordatorios();
 
-  delete todos[id];
+  delete o[id];
 
-  guardarTodosRecordatorios(
-    todos
-  );
-
+  guardarTodosRecordatorios(o);
 }
 
 
-/* ABRIR RECORDATORIO */
-
 function abrirRecordatorio(id){
 
-  pendienteSeleccionado =
+  pendienteSeleccionado=
     pendientes.find(
-      p => p.id === id
+      p=>p.id===id
     );
 
+  if(!pendienteSeleccionado) return;
 
-  if(!pendienteSeleccionado)
-    return;
-
-
-  const r =
+  const r=
     obtenerRecordatorio(id);
-
 
   document.getElementById(
     "recordatorioNombre"
-  ).textContent =
-    "🧾 " +
-    pendienteSeleccionado.concepto +
-    " · " +
-    dinero(
-      pendienteSeleccionado.monto
-    );
-
+  ).textContent=
+    "🧾 "+
+    pendienteSeleccionado.concepto+
+    " · "+
+    dinero(pendienteSeleccionado.monto);
 
   if(r){
 
     document.getElementById(
       "recordatorioFecha"
-    ).value = r.fecha;
-
+    ).value=r.fecha;
 
     document.getElementById(
       "recordatorioHora"
-    ).value = r.hora;
+    ).value=r.hora;
 
-  }
-  else{
+  }else{
 
-    const d =
-      new Date();
+    const d=new Date();
 
     d.setDate(
-      d.getDate() + 1
+      d.getDate()+1
     );
-
 
     document.getElementById(
       "recordatorioFecha"
-    ).value =
-      d.toISOString()
-       .split("T")[0];
-
+    ).value=
+      d.toISOString().split("T")[0];
 
     document.getElementById(
       "recordatorioHora"
-    ).value =
-      "09:00";
-
+    ).value="09:00";
   }
 
-
-  abrirModal(
-    "modalRecordatorio"
-  );
-
+  abrirModal("modalRecordatorio");
 }
 
 
-/* GUARDAR RECORDATORIO */
-
 function guardarRecordatorio(){
 
-  if(!pendienteSeleccionado)
-    return;
+  if(!pendienteSeleccionado) return;
 
-
-  const fecha =
+  const fecha=
     document.getElementById(
       "recordatorioFecha"
     ).value;
 
-
-  const hora =
+  const hora=
     document.getElementById(
       "recordatorioHora"
     ).value;
 
-
-  if(!fecha || !hora){
+  if(!fecha||!hora){
 
     return alert(
       "Elegí fecha y hora."
     );
-
   }
 
-
-  const todos =
+  const o=
     obtenerRecordatorios();
 
-
-  todos[
-    pendienteSeleccionado.id
-  ] = {
-
+  o[pendienteSeleccionado.id]={
     fecha,
-
     hora
-
   };
 
-
-  guardarTodosRecordatorios(
-    todos
-  );
-
+  guardarTodosRecordatorios(o);
 
   cerrarModal(
     "modalRecordatorio"
   );
 
-
   mostrarPendientes();
-
 }
 
 
-/* AVISO AL ABRIR */
+/* =========================================================
+   AVISO AL ABRIR
+   ========================================================= */
 
 function mostrarAvisosAlAbrir(){
 
-  const todos =
+  const todos=
     obtenerRecordatorios();
 
-
-  const lista =
+  const lista=
     pendientes
-      .filter(
-        p => todos[p.id]
-      )
-      .map(
-        p => ({
-          p,
-          r:todos[p.id]
-        })
-      );
+      .filter(p=>todos[p.id])
+      .map(p=>({
+        p,
+        r:todos[p.id]
+      }));
 
+  if(!lista.length) return;
 
-  if(!lista.length)
-    return;
-
-
-  const container =
+  const c=
     document.getElementById(
       "toastContainer"
     );
 
+  if(!c) return;
 
-  const toast =
-    document.createElement(
-      "div"
-    );
+  const toast=
+    document.createElement("div");
 
+  toast.className="toast";
 
-  toast.className =
-    "toast";
-
-
-  const items =
+  const items=
     lista
       .slice(0,5)
-      .map(x => `
+      .map(x=>`
 
         <div class="toast-item">
 
           <strong>
-            💸
-            ${escapeHTML(
-              x.p.concepto
-            )}
-
-            ·
-
-            ${dinero(
-              x.p.monto
-            )}
-
+            💸 ${escapeHTML(x.p.concepto)}
+            · ${dinero(x.p.monto)}
           </strong>
 
           <span>
-
-            🔔
-            ${fechaBonita(
-              x.r.fecha
-            )}
-
-            a las
-
-            ${escapeHTML(
-              x.r.hora
-            )}
-
+            🔔 ${fechaBonita(x.r.fecha)}
+            a las ${escapeHTML(x.r.hora)}
           </span>
 
         </div>
@@ -1205,8 +1119,7 @@ function mostrarAvisosAlAbrir(){
       `)
       .join("");
 
-
-  toast.innerHTML = `
+  toast.innerHTML=`
 
     <div class="toast-head">
 
@@ -1214,106 +1127,84 @@ function mostrarAvisosAlAbrir(){
         🔔
       </div>
 
-
       <div class="toast-title">
         Tenés pagos para recordar 💕
       </div>
 
-
       <button
         class="toast-close"
-        onclick="cerrarAviso(this)"
-      >
+        onclick="cerrarAviso(this)">
         ×
       </button>
 
     </div>
 
-
     <div class="toast-items">
-
       ${items}
-
     </div>
 
   `;
 
+  c.appendChild(toast);
 
-  container.appendChild(
-    toast
-  );
-
-
-  setTimeout(() => {
+  setTimeout(()=>{
 
     if(toast.parentNode){
 
-      toast.classList.add(
-        "hide"
-      );
-
+      toast.classList.add("hide");
 
       setTimeout(
-        () => toast.remove(),
+        ()=>toast.remove(),
         400
       );
-
     }
 
   },3500);
-
 }
 
 
 function cerrarAviso(btn){
 
-  const toast =
+  const t=
     btn.closest(".toast");
 
+  if(!t) return;
 
-  if(!toast)
-    return;
-
-
-  toast.classList.add(
-    "hide"
-  );
-
+  t.classList.add("hide");
 
   setTimeout(
-    () => toast.remove(),
+    ()=>t.remove(),
     400
   );
-
 }
+
+
 /* =========================================================
    TEMAS
-========================================================= */
+   ========================================================= */
 
 function abrirTemas(){
 
-  const tema =
+  const t=
     localStorage.getItem(
       "facujaz_tema"
     ) || "kawaii";
 
   document.getElementById(
     "selectorTema"
-  ).value = tema;
+  ).value=t;
 
   abrirModal("modalTemas");
-
 }
 
 
 function cambiarTema(tema){
 
-  const c =
+  const c=
     temas[tema] || temas.kawaii;
 
-  const root =
+  const root=
     document.documentElement;
-
 
   root.style.setProperty(
     "--primary",
@@ -1350,37 +1241,31 @@ function cambiarTema(tema){
     c.border
   );
 
-
   document.body.classList.toggle(
     "dark",
-    tema === "dark"
+    tema==="dark"
   );
 
   document.body.classList.toggle(
     "kawaii",
-    tema === "kawaii"
+    tema==="kawaii"
   );
-
 
   localStorage.setItem(
     "facujaz_tema",
     tema
   );
-
 }
 
 
 /* =========================================================
    AVATARES
-========================================================= */
+   ========================================================= */
 
 function avatarKey(persona){
 
-  return (
-    "facujaz_avatar_" +
-    persona.toLowerCase()
-  );
-
+  return "facujaz_avatar_"+
+    persona.toLowerCase();
 }
 
 
@@ -1389,16 +1274,14 @@ function obtenerAvatar(persona){
   return localStorage.getItem(
     avatarKey(persona)
   );
-
 }
 
 
 function avatarDefault(persona){
 
-  return persona === "Facu"
+  return persona==="Facu"
     ? "👨"
     : "👩";
-
 }
 
 
@@ -1407,335 +1290,284 @@ function ponerAvatarElemento(
   persona
 ){
 
-  const valor =
+  const valor=
     obtenerAvatar(persona);
-
 
   if(valor && valor.startsWith("data:image")){
 
-    img.src = valor;
+    img.src=valor;
 
     img.classList.remove(
       "avatar-placeholder",
       "mini-placeholder"
     );
 
-    img.style.objectFit =
-      "cover";
+    img.style.objectFit="cover";
 
+  }else{
+
+    img.removeAttribute("src");
+
+    img.classList.add(
+      persona==="Facu" || persona==="Jaz"
+        ? "mini-placeholder"
+        : "avatar-placeholder"
+    );
+
+    img.alt=
+      avatarDefault(persona);
+
+    img.style.objectFit="contain";
+
+    img.style.background=
+      "#fff0f6";
+
+    img.dataset.emoji=
+      avatarDefault(persona);
+
+    img.onload=null;
+    img.onerror=null;
   }
-  else{
-
-    img.src =
-      "data:image/svg+xml;charset=UTF-8," +
-      encodeURIComponent(`
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 100 100"
-        >
-
-          <rect
-            width="100"
-            height="100"
-            rx="25"
-            fill="#fff0f6"
-          />
-
-          <text
-            x="50"
-            y="67"
-            text-anchor="middle"
-            font-size="48"
-          >
-            ${avatarDefault(persona)}
-          </text>
-
-        </svg>
-
-      `);
-
-    img.style.objectFit =
-      "contain";
-
-  }
-
 }
 
 
 function actualizarAvatares(){
 
-  const header =
+  const ha=
     document.getElementById(
       "headerAvatar"
     );
 
-  const facu =
+  const fa=
     document.getElementById(
       "facuAvatar"
     );
 
-  const jaz =
+  const ja=
     document.getElementById(
       "jazAvatar"
     );
 
-
   ponerAvatarElemento(
-    header,
+    ha,
     "Facu"
   );
 
   ponerAvatarElemento(
-    facu,
+    fa,
     "Facu"
   );
 
   ponerAvatarElemento(
-    jaz,
+    ja,
     "Jaz"
   );
 
+  [ha,fa,ja].forEach(img=>{
+
+    if(!img) return;
+
+    if(!obtenerAvatar(
+      img.id==="jazAvatar"
+        ? "Jaz"
+        : "Facu"
+    )){
+
+      img.src=
+        "data:image/svg+xml;charset=UTF-8,"+
+        encodeURIComponent(`
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100">
+
+            <rect
+              width="100"
+              height="100"
+              rx="25"
+              fill="#fff0f6"/>
+
+            <text
+              x="50"
+              y="65"
+              text-anchor="middle"
+              font-size="48">
+              ${
+                img.id==="jazAvatar"
+                  ? "👩"
+                  : "👨"
+              }
+            </text>
+
+          </svg>
+        `);
+    }
+  });
 }
 
-
-/* ABRIR CAMBIO DE AVATAR */
 
 function abrirAvatar(persona){
 
-  personaAvatar =
-    persona;
+  personaAvatar=persona;
 
-
-  avatarTemporal =
-    obtenerAvatar(persona) ||
-    null;
-
+  avatarTemporal=
+    obtenerAvatar(persona) || null;
 
   document.getElementById(
     "avatarPerson"
-  ).textContent =
-    "Avatar de " +
-    persona;
-
+  ).textContent=
+    "Avatar de "+persona;
 
   actualizarPreviewAvatar();
 
-
-  abrirModal(
-    "modalAvatar"
-  );
-
+  abrirModal("modalAvatar");
 }
 
 
-/* VISTA PREVIA */
-
 function actualizarPreviewAvatar(){
 
-  const preview =
+  const p=
     document.getElementById(
       "avatarPreview"
     );
 
-
   if(avatarTemporal){
 
-    preview.src =
-      avatarTemporal;
+    p.src=avatarTemporal;
 
-    preview.style.objectFit =
-      "cover";
+    p.style.objectFit="cover";
 
-  }
-  else{
+  }else{
 
-    preview.src =
-      "data:image/svg+xml;charset=UTF-8," +
+    p.src=
+      "data:image/svg+xml;charset=UTF-8,"+
       encodeURIComponent(`
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 100 100"
-        >
+          viewBox="0 0 100 100">
 
           <rect
             width="100"
             height="100"
             rx="28"
-            fill="#fff0f6"
-          />
+            fill="#fff0f6"/>
 
           <text
             x="50"
             y="67"
             text-anchor="middle"
-            font-size="48"
-          >
-            ${avatarDefault(
-              personaAvatar
-            )}
+            font-size="48">
+            ${avatarDefault(personaAvatar)}
           </text>
 
         </svg>
-
       `);
 
-    preview.style.objectFit =
-      "contain";
-
+    p.style.objectFit="contain";
   }
-
 }
 
-
-/* USAR EMOJI */
 
 function usarAvatarEmoji(){
 
-  avatarTemporal = null;
+  avatarTemporal=null;
 
   actualizarPreviewAvatar();
-
 }
 
-
-/* PROCESAR FOTO */
 
 function procesarAvatar(event){
 
-  const file =
+  const file=
     event.target.files &&
     event.target.files[0];
 
-
-  if(!file)
-    return;
-
+  if(!file) return;
 
   if(!file.type.startsWith("image/")){
 
-    alert(
+    return alert(
       "Elegí una imagen."
     );
-
-    return;
-
   }
 
+  if(file.size>10*1024*1024){
 
-  if(
-    file.size >
-    10 * 1024 * 1024
-  ){
-
-    alert(
+    return alert(
       "La foto es demasiado grande. Elegí una de menos de 10 MB."
     );
-
-    return;
-
   }
 
-
-  const reader =
+  const reader=
     new FileReader();
 
+  reader.onload=e=>{
 
-  reader.onload =
-    e => {
+    const img=
+      new Image();
 
-      const img =
-        new Image();
+    img.onload=()=>{
 
+      const max=600;
 
-      img.onload =
-        () => {
+      const escala=
+        Math.min(
+          1,
+          max/
+          Math.max(
+            img.width,
+            img.height
+          )
+        );
 
-          const max = 600;
+      const canvas=
+        document.createElement(
+          "canvas"
+        );
 
+      canvas.width=
+        Math.max(
+          1,
+          Math.round(
+            img.width*escala
+          )
+        );
 
-          const escala =
-            Math.min(
-              1,
-              max /
-              Math.max(
-                img.width,
-                img.height
-              )
-            );
+      canvas.height=
+        Math.max(
+          1,
+          Math.round(
+            img.height*escala
+          )
+        );
 
+      const ctx=
+        canvas.getContext("2d");
 
-          const canvas =
-            document.createElement(
-              "canvas"
-            );
+      ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
+      avatarTemporal=
+        canvas.toDataURL(
+          "image/jpeg",
+          0.78
+        );
 
-          canvas.width =
-            Math.max(
-              1,
-              Math.round(
-                img.width *
-                escala
-              )
-            );
-
-
-          canvas.height =
-            Math.max(
-              1,
-              Math.round(
-                img.height *
-                escala
-              )
-            );
-
-
-          const ctx =
-            canvas.getContext(
-              "2d"
-            );
-
-
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-          );
-
-
-          avatarTemporal =
-            canvas.toDataURL(
-              "image/jpeg",
-              0.78
-            );
-
-
-          actualizarPreviewAvatar();
-
-        };
-
-
-      img.src =
-        e.target.result;
-
+      actualizarPreviewAvatar();
     };
 
+    img.src=e.target.result;
+  };
 
-  reader.readAsDataURL(
-    file
-  );
+  reader.readAsDataURL(file);
 
-
-  event.target.value = "";
-
+  event.target.value="";
 }
 
-
-/* GUARDAR AVATAR */
 
 function guardarAvatar(){
 
@@ -1744,74 +1576,985 @@ function guardarAvatar(){
     try{
 
       localStorage.setItem(
-        avatarKey(
-          personaAvatar
-        ),
+        avatarKey(personaAvatar),
         avatarTemporal
       );
 
-    }
-    catch(e){
+    }catch(e){
 
-      alert(
+      return alert(
         "No hay espacio suficiente para guardar esa foto en este teléfono."
       );
-
-      return;
-
     }
 
-  }
-  else{
+  }else{
 
     localStorage.removeItem(
-      avatarKey(
-        personaAvatar
-      )
+      avatarKey(personaAvatar)
     );
-
   }
 
-
-  cerrarModal(
-    "modalAvatar"
-  );
-
+  cerrarModal("modalAvatar");
 
   actualizarAvatares();
+  
+}
+/* =========================================================
+   ⭐ RECOMPENSAS
+   ========================================================= */
 
+async function cargarRecompensas(){
+
+  const e=await db
+    .from("estrellas_pareja")
+    .select("persona,estrellas");
+
+  if(e.error){
+    console.error(e.error);
+    return;
+  }
+
+  estrellas={
+    Facu:0,
+    Jaz:0
+  };
+
+  (e.data||[]).forEach(x=>{
+
+    if(
+      x.persona==="Facu" ||
+      x.persona==="Jaz"
+    ){
+
+      estrellas[x.persona]=
+        Number(x.estrellas||0);
+    }
+  });
+
+
+  const r=await db
+    .from("recompensas")
+    .select("*")
+    .order(
+      "fecha_creacion",
+      {ascending:true}
+    );
+
+  if(r.error){
+    console.error(r.error);
+    return;
+  }
+
+  recompensas=
+    r.data||[];
+
+
+  const h=await db
+    .from("historial_recompensas")
+    .select("*")
+    .order(
+      "fecha",
+      {ascending:false}
+    )
+    .limit(20);
+
+  if(h.error){
+    console.error(h.error);
+    return;
+  }
+
+  historialRecompensas=
+    h.data||[];
+
+
+  // Recompensas iniciales
+
+  if(!recompensas.length){
+
+    const ejemplos=[
+
+      {
+        nombre:"Que me hagan un mate",
+        descripcion:
+          "Un matecito preparado por la otra persona ☕",
+        costo:1
+      },
+
+      {
+        nombre:"Elegir qué comemos",
+        descripcion:
+          "Hoy yo decido la comida 🍕",
+        costo:2
+      },
+
+      {
+        nombre:"Elegir la película",
+        descripcion:
+          "Yo elijo qué vemos 🎬",
+        costo:2
+      },
+
+      {
+        nombre:"No lavar los platos",
+        descripcion:
+          "Esta vez los lava la otra persona 🧹",
+        costo:3
+      },
+
+      {
+        nombre:"Cita elegida por mí",
+        descripcion:
+          "Una salida elegida por quien canjea ❤️",
+        costo:5
+      }
+
+    ];
+
+    const ins=
+      await db
+        .from("recompensas")
+        .insert(ejemplos)
+        .select("*");
+
+    if(!ins.error){
+
+      recompensas=
+        ins.data||[];
+    }
+  }
 }
 
 
 /* =========================================================
-   INICIALIZACIÓN
-========================================================= */
+   CREAR PESTAÑA Y PANTALLA DE RECOMPENSAS
+   ========================================================= */
 
-(function(){
+function asegurarUIRecompensas(){
 
-  const tema =
-    localStorage.getItem(
-      "facujaz_tema"
-    ) || "kawaii";
+  if(
+    document.getElementById(
+      "tabRecompensas"
+    )
+  ){
+    return;
+  }
 
+  const tabs=
+    document.querySelector(".tabs");
 
-  cambiarTema(
-    tema
-  );
-
-
-  actualizarPersonaSegunTipo();
-
-})();
+  if(!tabs) return;
 
 
-cargarDatos()
-  .then(() => {
+  // Botón ⭐ Recompensas
 
-    setTimeout(
-      mostrarAvisosAlAbrir,
-      450
+  const tab=
+    document.createElement("button");
+
+  tab.id="tabRecompensas";
+
+  tab.className="tab";
+
+  tab.textContent=
+    "⭐ Recompensas";
+
+  tab.onclick=()=>{
+    mostrarSeccion(
+      "recompensas"
+    );
+  };
+
+  tabs.appendChild(tab);
+
+
+  // Tres columnas
+
+  tabs.style.gridTemplateColumns=
+    "repeat(3,1fr)";
+
+
+  // Sección
+
+  const sec=
+    document.createElement(
+      "section"
     );
 
-  });
+  sec.id="recompensas";
 
+  sec.className="section";
+
+
+  sec.innerHTML=`
+
+    <div class="reward-hero">
+
+      <div class="reward-hero-title">
+        ⭐ Banco de estrellitas
+      </div>
+
+      <div class="reward-hero-sub">
+        Pagá pendientes, juntá estrellas
+        y canjealas por favores 💕
+      </div>
+
+
+      <div class="stars-people">
+
+        <div class="star-person">
+
+          <div class="star-avatar">
+            👨
+          </div>
+
+          <div>
+            <b>Facu</b>
+
+            <strong id="estrellasFacu">
+              0 ⭐
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="star-person">
+
+          <div class="star-avatar">
+            👩
+          </div>
+
+          <div>
+            <b>Jaz</b>
+
+            <strong id="estrellasJaz">
+              0 ⭐
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="form-card">
+
+      <div class="form-title">
+        🎁 Crear un nuevo favor
+      </div>
+
+
+      <div class="field">
+
+        <input
+          id="rewardNombre"
+          placeholder="Ej: Que me hagan un café">
+
+      </div>
+
+
+      <div class="field">
+
+        <input
+          id="rewardDescripcion"
+          placeholder="Descripción (opcional)">
+
+      </div>
+
+
+      <div class="field">
+
+        <input
+          id="rewardCosto"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="¿Cuántas ⭐ cuesta?">
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        onclick="agregarRecompensa()">
+
+        ➕ Agregar recompensa
+
+      </button>
+
+    </div>
+
+
+    <div class="section-heading">
+
+      <span>🎁</span>
+
+      <h2>
+        Favores disponibles
+      </h2>
+
+    </div>
+
+
+    <div id="listaRecompensas"></div>
+
+
+    <div class="section-heading">
+
+      <span>📜</span>
+
+      <h2>
+        Canjes recientes
+      </h2>
+
+    </div>
+
+
+    <div id="historialRecompensas"></div>
+
+  `;
+
+
+  // Insertamos antes de los modales
+
+  const modalTemas=
+    document.getElementById(
+      "modalTemas"
+    );
+
+  if(modalTemas){
+
+    modalTemas.parentNode.insertBefore(
+      sec,
+      modalTemas
+    );
+
+  }else{
+
+    const app=
+      document.querySelector(".app");
+
+    if(app){
+      app.appendChild(sec);
+    }
+  }
+
+
+  // Estilos propios
+
+  const style=
+    document.createElement("style");
+
+  style.id=
+    "recompensasStyle";
+
+  style.textContent=`
+
+    .reward-hero{
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+      color:#fff;
+      border-radius:28px;
+      padding:20px;
+      box-shadow:
+        0 16px 35px
+        rgba(255,87,146,.2);
+      margin-bottom:18px;
+    }
+
+    .reward-hero-title{
+      font-size:23px;
+      font-weight:950;
+    }
+
+    .reward-hero-sub{
+      font-size:13px;
+      opacity:.92;
+      margin-top:4px;
+    }
+
+    .stars-people{
+      display:grid;
+      grid-template-columns:
+        1fr 1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .star-person{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:
+        rgba(255,255,255,.18);
+      padding:11px;
+      border-radius:18px;
+    }
+
+    .star-person b{
+      display:block;
+      font-size:12px;
+      opacity:.9;
+    }
+
+    .star-person strong{
+      display:block;
+      font-size:19px;
+      margin-top:2px;
+    }
+
+    .star-avatar{
+      width:43px;
+      height:43px;
+      border-radius:15px;
+      background:
+        rgba(255,255,255,.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:23px;
+    }
+
+    .reward-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:16px;
+      margin-bottom:10px;
+      box-shadow:var(--shadow);
+    }
+
+    .reward-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .reward-name{
+      font-weight:900;
+      font-size:17px;
+    }
+
+    .reward-cost{
+      white-space:nowrap;
+      font-weight:950;
+      color:var(--primary);
+      background:var(--bg);
+      padding:8px 10px;
+      border-radius:13px;
+    }
+
+    .reward-desc{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:5px;
+      line-height:1.45;
+    }
+
+    .reward-actions{
+      display:grid;
+      grid-template-columns:
+        1fr 1fr 40px;
+      gap:7px;
+      margin-top:13px;
+    }
+
+    .reward-use,
+    .reward-delete{
+      padding:11px 5px;
+      border-radius:13px;
+      font-weight:850;
+    }
+
+    .reward-use{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .reward-delete{
+      background:#fff0f1;
+      color:var(--red);
+    }
+
+    .history-item{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:13px;
+      margin-bottom:8px;
+    }
+
+    .history-main{
+      min-width:0;
+    }
+
+    .history-name{
+      font-weight:850;
+    }
+
+    .history-meta{
+      color:var(--muted);
+      font-size:11px;
+      margin-top:4px;
+    }
+
+    .history-cost{
+      font-weight:900;
+      color:var(--red);
+      white-space:nowrap;
+    }
+
+    .stars-empty{
+      text-align:center;
+      padding:25px;
+      color:var(--muted);
+    }
+
+    @media(max-width:520px){
+
+      .tabs .tab{
+        font-size:12px;
+        padding-left:5px;
+        padding-right:5px;
+      }
+
+      .reward-actions{
+        grid-template-columns:
+          1fr 1fr 40px;
+      }
+
+    }
+
+  `;
+
+  document.head.appendChild(style);
+}
+
+
+/* =========================================================
+   MOSTRAR RECOMPENSAS
+   ========================================================= */
+
+function mostrarRecompensas(){
+
+  asegurarUIRecompensas();
+
+
+  const ef=
+    document.getElementById(
+      "estrellasFacu"
+    );
+
+  const ej=
+    document.getElementById(
+      "estrellasJaz"
+    );
+
+
+  if(ef){
+
+    ef.textContent=
+      estrellas.Facu.toLocaleString(
+        "es-UY",
+        {
+          maximumFractionDigits:1
+        }
+      )+" ⭐";
+  }
+
+
+  if(ej){
+
+    ej.textContent=
+      estrellas.Jaz.toLocaleString(
+        "es-UY",
+        {
+          maximumFractionDigits:1
+        }
+      )+" ⭐";
+  }
+
+
+  const lista=
+    document.getElementById(
+      "listaRecompensas"
+    );
+
+  if(!lista) return;
+
+
+  if(!recompensas.length){
+
+    lista.innerHTML=
+      '<div class="stars-empty">'+
+      'Todavía no hay recompensas. 💕'+
+      '</div>';
+
+    return;
+  }
+
+
+  lista.innerHTML=
+    recompensas.map(r=>`
+
+      <div class="reward-card">
+
+        <div class="reward-top">
+
+          <div>
+
+            <div class="reward-name">
+
+              🎁
+              ${escapeHTML(r.nombre)}
+
+            </div>
+
+            ${
+              r.descripcion
+              ?
+              `
+              <div class="reward-desc">
+                ${escapeHTML(r.descripcion)}
+              </div>
+              `
+              :
+              ""
+            }
+
+          </div>
+
+
+          <div class="reward-cost">
+
+            ⭐ ${Number(r.costo)}
+
+          </div>
+
+        </div>
+
+
+        <div class="reward-actions">
+
+          <button
+            class="reward-use"
+            onclick="
+              canjearRecompensa(
+                '${r.id}',
+                'Facu'
+              )
+            ">
+
+            Usar Facu
+
+          </button>
+
+
+          <button
+            class="reward-use"
+            onclick="
+              canjearRecompensa(
+                '${r.id}',
+                'Jaz'
+              )
+            ">
+
+            Usar Jaz
+
+          </button>
+
+
+          <button
+            class="reward-delete"
+            onclick="
+              eliminarRecompensa(
+                '${r.id}'
+              )
+            ">
+
+            🗑️
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+
+  const hist=
+    document.getElementById(
+      "historialRecompensas"
+    );
+
+
+  if(hist){
+
+    hist.innerHTML=
+      historialRecompensas.length
+
+      ?
+
+      historialRecompensas
+        .slice(0,20)
+        .map(h=>`
+
+          <div class="history-item">
+
+            <div class="history-main">
+
+              <div class="history-name">
+
+                ${escapeHTML(h.persona)}
+                canjeó
+                ${escapeHTML(
+                  h.recompensa_nombre
+                )}
+                🎉
+
+              </div>
+
+              <div class="history-meta">
+
+                ${fechaBonita(h.fecha)}
+
+              </div>
+
+            </div>
+
+
+            <div class="history-cost">
+
+              -⭐
+              ${Number(
+                h.estrellas_gastadas
+              )}
+
+            </div>
+
+          </div>
+
+        `).join("")
+
+      :
+
+      `
+      <div class="stars-empty">
+        Todavía no hay canjes. ⭐
+      </div>
+      `;
+  }
+}
+
+
+/* =========================================================
+   AGREGAR RECOMPENSA
+   ========================================================= */
+
+async function agregarRecompensa(){
+
+  const nombre=
+    document.getElementById(
+      "rewardNombre"
+    ).value.trim();
+
+  const descripcion=
+    document.getElementById(
+      "rewardDescripcion"
+    ).value.trim();
+
+  const costo=
+    Number(
+      document.getElementById(
+        "rewardCosto"
+      ).value
+    );
+
+
+  if(!nombre){
+
+    return alert(
+      "Poné el nombre del favor."
+    );
+  }
+
+
+  if(!costo || costo<1){
+
+    return alert(
+      "Poné un costo de estrellas válido."
+    );
+  }
+
+
+  const {error}=
+    await db
+      .from("recompensas")
+      .insert({
+        nombre,
+        descripcion:
+          descripcion || null,
+        costo
+      });
+
+
+  if(error){
+
+    console.error(error);
+
+    return alert(
+      "No se pudo crear la recompensa."
+    );
+  }
+
+
+  document.getElementById(
+    "rewardNombre"
+  ).value="";
+
+  document.getElementById(
+    "rewardDescripcion"
+  ).value="";
+
+  document.getElementById(
+    "rewardCosto"
+  ).value="";
+
+
+  await cargarRecompensas();
+
+  mostrarRecompensas();
+}
+async function eliminarRecompensa(id){
+  const r=recompensas.find(x=>x.id===id);
+  if(!r) return;
+
+  if(!confirm("¿Querés eliminar la recompensa?\n\n"+r.nombre)) return;
+
+  const {error}=await db.from("recompensas").delete().eq("id",id);
+
+  if(error){
+    console.error(error);
+    return alert("No se pudo eliminar.");
+  }
+
+  await cargarRecompensas();
+  mostrarRecompensas();
+}
+
+
+async function canjearRecompensa(id,persona){
+  const r=recompensas.find(x=>x.id===id);
+  if(!r) return;
+
+  const saldo=Number(estrellas[persona]||0);
+  const costo=Number(r.costo||0);
+
+  if(saldo<costo){
+    return alert(
+      "A "+persona+" le faltan "+
+      (costo-saldo).toLocaleString("es-UY",{
+        maximumFractionDigits:1
+      })+
+      " ⭐ para canjear esto."
+    );
+  }
+
+  if(!confirm(
+    "¿Querés gastar "+costo+
+    " ⭐ de "+persona+
+    " para canjear:\n\n🎁 "+r.nombre+"?"
+  )) return;
+
+  const nuevoSaldo=saldo-costo;
+
+  const {error:e1}=await db
+    .from("estrellas_pareja")
+    .update({estrellas:nuevoSaldo})
+    .eq("persona",persona);
+
+  if(e1){
+    console.error(e1);
+    return alert("No se pudieron descontar las estrellas.");
+  }
+
+  const {error:e2}=await db
+    .from("historial_recompensas")
+    .insert({
+      recompensa_id:r.id,
+      recompensa_nombre:r.nombre,
+      persona:persona,
+      estrellas_gastadas:costo
+    });
+
+  if(e2){
+    console.error(e2);
+
+    await db
+      .from("estrellas_pareja")
+      .update({estrellas:saldo})
+      .eq("persona",persona);
+
+    return alert(
+      "No se pudo guardar el canje. "+
+      "No se descontaron las estrellas."
+    );
+  }
+
+  estrellas[persona]=nuevoSaldo;
+
+  await cargarRecompensas();
+  mostrarRecompensas();
+
+  mostrarEstrellasToast(
+    "🎉 "+persona+
+    " canjeó "+r.nombre+
+    " por ⭐ "+costo
+  );
+}
+
+
+function mostrarEstrellasToast(texto){
+  const c=document.getElementById("toastContainer");
+
+  if(!c) return;
+
+  const toast=document.createElement("div");
+
+  toast.className="toast star-toast";
+
+  toast.innerHTML=`
+    <div class="toast-head">
+      <div class="toast-icon">⭐</div>
+      <div class="toast-title">
+        ${escapeHTML(texto)}
+      </div>
+    </div>
+  `;
+
+  c.appendChild(toast);
+
+  setTimeout(()=>{
+    if(toast.parentNode){
+      toast.classList.add("hide");
+
+      setTimeout(()=>{
+        toast.remove();
+      },400);
+    }
+  },2800);
+}
+
+
+/* Iniciar la UI de recompensas antes de cargar los datos. */
+asegurarUIRecompensas();
